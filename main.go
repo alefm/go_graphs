@@ -1,24 +1,117 @@
 package main
 
 import (
-	"github.com/fogleman/gg"
-	"math/rand"
-	"time"
+	"fmt"
 )
 
 type Node struct {
-	position_x float64
-	position_y float64
-	// node_list  *Node
+	// position_x float64
+	// position_y float64
+	name            string
+	next            *Node
+	connection_list *NodeList
+	next_connection *Node
 }
 
-const screen_width int = 1024
-const screen_height int = 1024
+type NodeList struct {
+	length int
+	start  *Node
+}
 
-const screen_size float64 = 1024
-const radio float64 = 20
+func printConnectionList(node Node) {
+	if node.connection_list.length == 0 {
+		fmt.Printf("Não há nenhuma Conexão!\n")
+	} else {
+		currentNode := node.connection_list.start
+		for currentNode != nil {
+			fmt.Printf("%s ", currentNode.name)
+			currentNode = currentNode.next_connection
+		}
+
+		fmt.Printf("\n")
+	}
+}
+
+func printNodeList(list NodeList) {
+	fmt.Printf("Lista de nodos: \n")
+	if list.length == 0 {
+		fmt.Printf("Não há nenhum nodo!\n")
+	} else {
+		currentNode := list.start
+		for currentNode != nil {
+			fmt.Printf("Nodo %s: ", currentNode.name)
+			printConnectionList(*currentNode)
+			currentNode = currentNode.next
+		}
+	}
+}
+
+func (list *NodeList) Append(newNode *Node) {
+	if list.length == 0 {
+		list.start = newNode
+	} else {
+		currentNode := list.start
+		for currentNode.next != nil {
+			currentNode = currentNode.next
+		}
+		currentNode.next = newNode
+	}
+	list.length++
+}
+
+func (node *Node) AppendConnection(newConnection *Node) {
+	if node.connection_list.length == 0 {
+		node.connection_list.start = newConnection
+	} else {
+		currentNode := node.connection_list.start
+		for node.next_connection != nil {
+			currentNode = currentNode.next_connection
+		}
+		currentNode.next_connection = newConnection
+	}
+	node.connection_list.length++
+}
+
+func makeConnection(firstNode *Node, secondNode *Node) {
+	firstNode.AppendConnection(secondNode)
+	secondNode.AppendConnection(firstNode)
+}
 
 func main() {
+	node_list := &NodeList{}
+
+	nodeA := Node{
+		name:            "A",
+		connection_list: &NodeList{},
+	}
+
+	nodeB := Node{
+		name:            "B",
+		connection_list: &NodeList{},
+	}
+
+	nodeC := Node{
+		name:            "C",
+		connection_list: &NodeList{},
+	}
+
+	nodeD := Node{
+		name:            "D",
+		connection_list: &NodeList{},
+	}
+
+	node_list.Append(&nodeA)
+	node_list.Append(&nodeB)
+	node_list.Append(&nodeC)
+	node_list.Append(&nodeD)
+
+	makeConnection(&nodeA, &nodeB)
+	makeConnection(&nodeA, &nodeD)
+
+	printNodeList(*node_list)
+}
+
+/*func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -55,4 +148,4 @@ func check_distance(x1, y1, x2, y2 int) int {
 	distance := distanceX*distanceX + distanceY*distanceY
 
 	return distance
-}
+}*/
