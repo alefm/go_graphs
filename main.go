@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 type Node struct {
@@ -72,6 +73,33 @@ func (node *Node) AppendConnection(newConnection *Node) {
 	node.connection_list.length++
 }
 
+func (list *NodeList) RemoveNode(node *Node) *Node {
+	if list.length == 0 {
+		fmt.Printf("Lista Vazia!\n")
+		return nil
+	}
+
+	var previousNode *Node
+	currentNode := list.start
+
+	//TODO: remoção por node ID
+	for currentNode.name != node.name {
+		if currentNode.next == nil {
+			fmt.Println("Nodo não encontrado")
+		}
+
+		previousNode = currentNode
+		currentNode = currentNode.next
+	}
+
+	previousNode.next = currentNode.next
+	currentNode.next = nil
+
+	list.length--
+
+	return currentNode
+}
+
 func makeConnection(firstNode *Node, secondNode *Node) {
 	firstNode.AppendConnection(secondNode)
 	secondNode.AppendConnection(firstNode)
@@ -109,6 +137,15 @@ func main() {
 	makeConnection(&nodeA, &nodeD)
 
 	printNodeList(*node_list)
+
+	fmt.Printf("Removendo Nodo\n")
+	time.Sleep(100 * time.Millisecond)
+	nodo_removido := node_list.RemoveNode(&nodeC)
+
+	printNodeList(*node_list)
+	if nodo_removido != nil {
+		fmt.Printf("Nodo removido %s\n", nodo_removido.name)
+	}
 }
 
 /*func main() {
