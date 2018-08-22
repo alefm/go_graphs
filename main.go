@@ -2,198 +2,214 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
+type Graph struct {
+
+	//Store all nodes in the graph
+	NodeMap map[string]Node
+
+	//Store all edges in the graph
+	EdgeMap map[string]Edge
+
+	// IncomingNodeConnection maps its Node to incoming Nodes with its edge weight (incoming edges to its Node).
+	IncomingNodeConnection map[string]map[string]Node
+
+	// OutgoingNodeConnection maps its Node to outgoing Nodes with its edge weight (outgoing edges from its Node).
+	OutgoingNodeConnection map[string]map[string]Node
+}
+
+type Edge struct {
+	// Unique ID
+	name   string
+	src    Node
+	dst    Node
+	weight float64
+}
+
 type Node struct {
-	// position_x float64
-	// position_y float64
-	name            string
-	next            *Node
-	connection_list *NodeList
-	next_connection *Node
+	// Unique ID
+	name string
 }
 
-type NodeList struct {
-	length int
-	start  *Node
+// newGraph returns a new Graph.
+func NewGraph() *Graph {
+	return &Graph{
+		NodeMap:                make(map[string]Node),
+		EdgeMap:                make(map[string]Edge),
+		IncomingNodeConnection: make(map[string]map[string]Node),
+		OutgoingNodeConnection: make(map[string]map[string]Node),
+	}
 }
 
-func printConnectionList(node Node) {
-	if node.connection_list.length == 0 {
-		fmt.Printf("Não há nenhuma Conexão!\n")
+// NewEdge returns a new Edge.
+func NewEdge(id string, src, dst Node, weight float64) *Edge {
+	return &Edge{
+		name:   id,
+		src:    src,
+		dst:    dst,
+		weight: weight,
+	}
+}
+
+// NewNode returns a new Node.
+func NewNode(id string) *Node {
+	return &Node{
+		name: id,
+	}
+}
+
+func (g *Graph) ExistNode(id string) bool {
+	_, ok := g.NodeMap[id]
+	return ok
+}
+
+// Return the current count of nodes in the Graph
+func (g *Graph) GetNodeCount() int {
+	return len(g.NodeMap)
+}
+
+// Get a node in the Graph by id
+func (g *Graph) GetNode(id string) Node {
+	return g.NodeMap[id]
+}
+
+// Add new node in the Graph
+func (g *Graph) AddNode(node Node) bool {
+
+	if g.ExistNode(node.name) {
+		return false
+	}
+
+	id := node.name
+	g.NodeMap[id] = node
+	return true
+}
+
+// Delete a node by id
+func (g *Graph) DeleteNode(id string) bool {
+
+	if !g.ExistNode(id) {
+		return false
+	}
+
+	delete(g.NodeMap, id)
+
+	delete(g.IncomingNodeConnection, id)
+	for _, submap := range g.IncomingNodeConnection {
+		delete(submap, id)
+	}
+
+	delete(g.OutgoingNodeConnection, id)
+	for _, submap := range g.OutgoingNodeConnection {
+		delete(submap, id)
+	}
+
+	for _, edge := range g.EdgeMap {
+		if edge.src.name == id || edge.dst.name == id {
+			delete(g.EdgeMap, edge.name)
+		}
+	}
+
+	return true
+}
+
+// Add new Edge in the Graph
+func (g *Graph) AddEdge(edge Edge) error {
+
+	if !g.ExistNode(edge.src.name) {
+		return fmt.Errorf("%s does not exist in the graph.", edge.src)
+	}
+	if !g.ExistNode(edge.dst.name) {
+		return fmt.Errorf("%s does not exist in the graph.", edge.dst)
+	}
+
+	id := edge.name
+	g.EdgeMap[id] = edge
+
+	if _, ok := g.IncomingNodeConnection[edge.src.name]; ok {
+		g.IncomingNodeConnection[edge.src.name][edge.dst.name] = edge.dst
 	} else {
-		currentNode := node.connection_list.start
-		for currentNode != nil {
-			fmt.Printf("%s ", currentNode.name)
-			currentNode = currentNode.next_connection
+		tmap := make(map[string]Node)
+		tmap[edge.dst.name] = edge.dst
+		g.IncomingNodeConnection[edge.src.name] = tmap
+	}
+
+	if _, ok := g.OutgoingNodeConnection[edge.dst.name]; ok {
+		g.OutgoingNodeConnection[edge.dst.name][edge.src.name] = edge.src
+	} else {
+		tmap := make(map[string]Node)
+		tmap[edge.src.name] = edge.src
+		g.OutgoingNodeConnection[edge.dst.name] = tmap
+	}
+ 	
+	return nil
+}
+
+func (g *Graph) String() string {
+
+	fmt.Printf("digraph %s {\n", "Teste")
+
+	for _, node := range g.NodeMap {
+		fmt.Printf("\t%s;\n", node.name)
+	}
+
+
+	for _, edge := range g.EdgeMap {
+		// fmt.Printf("Edge: %s src %s dst %s\n", edge.name, edge.src.name, edge.dst.name)	
+		fmt.Printf("\t%s -> %s [label=%s, color=red];\n", edge.src.name, edge.dst.name, edge.name)
+	}
+
+	/*for key, sublist := range g.IncomingNodeConnection {
+		fmt.Printf("IncKey %s: ", key)
+
+		for _, node := range sublist {
+			fmt.Printf("%s ", node.name)
 		}
 
 		fmt.Printf("\n")
 	}
-}
 
-func printNodeList(list NodeList) {
-	fmt.Printf("Lista de nodos: \n")
-	if list.length == 0 {
-		fmt.Printf("Não há nenhum nodo!\n")
-	} else {
-		currentNode := list.start
-		for currentNode != nil {
-			fmt.Printf("Nodo %s: ", currentNode.name)
-			printConnectionList(*currentNode)
-			currentNode = currentNode.next
-		}
-	}
-}
+	for key, sublist := range g.OutgoingNodeConnection {
+		fmt.Printf("OutKey %s: ", key)
 
-func (list *NodeList) Append(newNode *Node) {
-	if list.length == 0 {
-		list.start = newNode
-	} else {
-		currentNode := list.start
-		for currentNode.next != nil {
-			currentNode = currentNode.next
-		}
-		currentNode.next = newNode
-	}
-	list.length++
-}
-
-func (node *Node) AppendConnection(newConnection *Node) {
-	if node.connection_list.length == 0 {
-		node.connection_list.start = newConnection
-	} else {
-		currentNode := node.connection_list.start
-		for currentNode.next_connection != nil {
-			currentNode = currentNode.next_connection
-		}
-		currentNode.next_connection = newConnection
-	}
-	node.connection_list.length++
-}
-
-func (list *NodeList) RemoveNode(node *Node) *Node {
-	var previousNode *Node
-	previousNode = list.start
-	currentNode := list.start
-
-	if list.length == 0 {
-		fmt.Printf("Lista Vazia!\n")
-		return nil
-	}
-
-	//TODO: remoção por node ID
-	for currentNode.name != node.name {
-		if currentNode.next == nil {
-			fmt.Println("Nodo não encontrado")
+		for _, node := range sublist {
+			fmt.Printf("%s ", node.name)
 		}
 
-		previousNode = currentNode
-		currentNode = currentNode.next
-	}
+		fmt.Printf("\n")
+	}*/
 
-	previousNode.next = currentNode.next
+	fmt.Printf("}\n")
 
-	if currentNode.connection_list.length > 0 {
-		currentConnected := currentNode.connection_list.start
-		for currentConnected != nil {
-			RemoveConnection(currentNode, currentConnected)
-			currentConnected = currentConnected.next_connection
-		}
-	}
-
-	currentNode.next = nil
-
-	list.length--
-
-	return currentNode
-}
-
-func (node *Node) RemoveNodeConnection(node_removed *Node) *Node {
-	if node.connection_list.length == 0 {
-		fmt.Printf("Lista Vazia!\n")
-		return nil
-	}
-
-	var previousNode *Node
-	previousNode = node.connection_list.start
-	currentNode := node.connection_list.start
-
-	//TODO: remoção por node ID
-	for currentNode.name != node_removed.name {
-		if currentNode.next_connection == nil {
-			fmt.Println("Nodo não encontrado %s %s", currentNode.name, node_removed.name)
-		}
-
-		previousNode = currentNode
-		currentNode = currentNode.next_connection
-	}
-
-	previousNode.next_connection = currentNode.next_connection
-	currentNode.next_connection = nil
-
-	node.connection_list.length--
-
-	return currentNode
-}
-
-func RemoveConnection(firstNode *Node, secondNode *Node) {
-	firstNode.RemoveNodeConnection(secondNode)
-	secondNode.RemoveNodeConnection(firstNode)
-}
-
-func makeConnection(firstNode *Node, secondNode *Node) {
-	firstNode.AppendConnection(secondNode)
-	secondNode.AppendConnection(firstNode)
+	return "l"
 }
 
 func main() {
-	node_list := &NodeList{}
+	graph := NewGraph()
 
-	nodeA := Node{
-		name:            "A",
-		connection_list: &NodeList{},
+	graph.AddNode(*NewNode("A"))
+	graph.AddNode(*NewNode("B"))
+	graph.AddNode(*NewNode("C"))
+	graph.AddNode(*NewNode("D"))
+
+	nodeA := graph.GetNode("A")
+	nodeB := graph.GetNode("B")
+	nodeC := graph.GetNode("C")
+	nodeD := graph.GetNode("D")
+
+	edge := NewEdge("E", nodeA, nodeB, 64)
+	edge2 := NewEdge("F", nodeC, nodeD, 64)
+
+	err := graph.AddEdge(*edge)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	nodeB := Node{
-		name:            "B",
-		connection_list: &NodeList{},
+	err2 := graph.AddEdge(*edge2)
+	if err2 != nil {
+		fmt.Println(err2)
 	}
 
-	nodeC := Node{
-		name:            "C",
-		connection_list: &NodeList{},
-	}
-
-	nodeD := Node{
-		name:            "D",
-		connection_list: &NodeList{},
-	}
-
-	node_list.Append(&nodeA)
-	node_list.Append(&nodeB)
-	node_list.Append(&nodeC)
-	node_list.Append(&nodeD)
-
-	makeConnection(&nodeA, &nodeB)
-	makeConnection(&nodeA, &nodeC)
-	makeConnection(&nodeA, &nodeD)
-
-	printNodeList(*node_list)
-
-	fmt.Printf("Removendo Nodo\n")
-	time.Sleep(100 * time.Millisecond)
-	nodo_removido := node_list.RemoveNode(&nodeC)
-
-	printNodeList(*node_list)
-	if nodo_removido != nil {
-		fmt.Printf("Nodo removido %s\n", nodo_removido.name)
-	}
-
-	fmt.Printf("Removendo Conexao\n")
-	time.Sleep(100 * time.Millisecond)
-
-	RemoveConnection(&nodeA, &nodeD)
-	printNodeList(*node_list)
+	graph.String()
 }
