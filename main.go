@@ -174,7 +174,7 @@ func (g *Graph) String() string {
 		fmt.Printf("OutKey %s: ", key)
 
 		for _, node := range sublist {
-			fmt.Printf("%s ", node.name)
+			fmt.Printf("%s  ", node.name)
 		}
 
 		fmt.Printf("\n")
