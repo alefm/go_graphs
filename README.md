@@ -29,3 +29,17 @@ Após a geração do arquivo `output.dot`, você poderá executar um destes coma
 dot -Tpng output.dot -o sample.png
 dot -Tpdf output.dot -o sample.pdf
 ```
+
+
+Using Makefile:
+
+```
+# All
+make build
+
+# Create output.dot
+make run
+
+# Create sample.png
+make dot
+```
