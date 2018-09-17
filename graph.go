@@ -77,7 +77,7 @@ func (g *Graph) DeleteNode(id string) bool {
 	}
 
 	for _, edge := range g.EdgeMap {
-		if edge.src.name == id || edge.dst.name == id {
+		if edge.begin.name == id || edge.end.name == id {
 			delete(g.EdgeMap, edge.name)
 		}
 	}
@@ -88,30 +88,29 @@ func (g *Graph) DeleteNode(id string) bool {
 // Add new Edge in the Graph
 func (g *Graph) AddEdge(edge Edge) error {
 
-	if !g.ExistNode(edge.src.name) {
-		return fmt.Errorf("%s does not exist in the graph.", edge.src)
+	if !g.ExistNode(edge.begin.name) {
+		return fmt.Errorf("%s does not exist in the graph.", edge.begin)
 	}
-	if !g.ExistNode(edge.dst.name) {
-		return fmt.Errorf("%s does not exist in the graph.", edge.dst)
+	if !g.ExistNode(edge.end.name) {
+		return fmt.Errorf("%s does not exist in the graph.", edge.end)
 	}
 
-	id := edge.name
-	g.EdgeMap[id] = edge
+	g.EdgeMap[edge.name] = edge
 
-	if _, ok := g.IncomingNodeConnection[edge.src.name]; ok {
-		g.IncomingNodeConnection[edge.src.name][edge.dst.name] = edge.dst
+	if _, ok := g.IncomingNodeConnection[edge.begin.name]; ok {
+		g.IncomingNodeConnection[edge.begin.name][edge.end.name] = edge.end
 	} else {
 		tmap := make(map[string]Node)
-		tmap[edge.dst.name] = edge.dst
-		g.IncomingNodeConnection[edge.src.name] = tmap
+		tmap[edge.end.name] = edge.end
+		g.IncomingNodeConnection[edge.begin.name] = tmap
 	}
 
-	if _, ok := g.OutgoingNodeConnection[edge.dst.name]; ok {
-		g.OutgoingNodeConnection[edge.dst.name][edge.src.name] = edge.src
+	if _, ok := g.OutgoingNodeConnection[edge.end.name]; ok {
+		g.OutgoingNodeConnection[edge.end.name][edge.begin.name] = edge.begin
 	} else {
 		tmap := make(map[string]Node)
-		tmap[edge.src.name] = edge.src
-		g.OutgoingNodeConnection[edge.dst.name] = tmap
+		tmap[edge.begin.name] = edge.begin
+		g.OutgoingNodeConnection[edge.end.name] = tmap
 	}
  	
 	return nil
@@ -128,8 +127,8 @@ func (g *Graph) String() string {
 
 
 	for _, edge := range g.EdgeMap {
-		// fmt.Printf("Edge: %s src %s dst %s\n", edge.name, edge.src.name, edge.dst.name)	
-		fmt.Printf("\t%s -> %s [label=%s, color=red];\n", edge.src.name, edge.dst.name, edge.name)
+		// fmt.Printf("Edge: %s begin %s end %s\n", edge.name, edge.begin.name, edge.end.name)	
+		fmt.Printf("\t%s -> %s [label=%s, color=blue dir=none];\n", edge.begin.name, edge.end.name, edge.name)
 	}
 
 	/*for key, sublist := range g.IncomingNodeConnection {
