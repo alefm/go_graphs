@@ -5,9 +5,6 @@ type Node struct {
 	name string
 }
 
-// NewNode returns a new Node.
-func NewNode(id string) *Node {
-	return &Node{
-		name: id,
-	}
+func (n Node) GetName() string {
+  return n.name
 }
