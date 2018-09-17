@@ -2,6 +2,9 @@ package main
 
 import (
   "fmt"
+  "os"
+  "log"
+  "bytes"
 )
 
 type Graph struct {
@@ -134,44 +137,38 @@ func (g *Graph) DeleteEdge(edge Edge) Edge {
 	return removedEdge
 }
 
+func (g *Graph) WriteToFile(fileName string) {
+
+	file, err := os.Create(fileName)
+    if err != nil {
+        log.Fatal("Cannot create file", err)
+    }
+    defer file.Close()
+
+    fmt.Fprintf(file, g.String())
+}
+
 // Return a graphviz format string of all graph
 func (g *Graph) String() string {
+	var buffer bytes.Buffer
 
-	fmt.Printf("digraph %s {\n", "Teste")
+	s := fmt.Sprintf("digraph %s {\n", "Teste")
+ 	buffer.WriteString(s)
 
 	for _, node := range g.NodeMap {
-		fmt.Printf("\t%s;\n", node.name)
+		s = fmt.Sprintf("\t%s;\n", node.name)
+		buffer.WriteString(s)
 	}
-
 
 	for _, edge := range g.EdgeMap {
-		// fmt.Printf("Edge: %s begin %s end %s\n", edge.name, edge.begin.name, edge.end.name)	
-		fmt.Printf("\t%s -> %s [label=%s, color=blue dir=none];\n", edge.begin.name, edge.end.name, edge.name)
+		s = fmt.Sprintf("\t%s -> %s [label=%s, color=blue dir=none];\n", edge.begin.name, edge.end.name, edge.name)
+		buffer.WriteString(s)
 	}
 
-	/*for key, sublist := range g.IncomingNodeConnection {
-		fmt.Printf("IncKey %s: ", key)
+	s = fmt.Sprintf("}\n")
+	buffer.WriteString(s)
 
-		for _, node := range sublist {
-			fmt.Printf("%s ", node.name)
-		}
-
-		fmt.Printf("\n")
-	}
-
-	for key, sublist := range g.OutgoingNodeConnection {
-		fmt.Printf("OutKey %s: ", key)
-
-		for _, node := range sublist {
-			fmt.Printf("%s  ", node.name)
-		}
-
-		fmt.Printf("\n")
-	}*/
-
-	fmt.Printf("}\n")
-
-	return "l"
+	return buffer.String()
 }
 
 // Verify if two nodes are adjacents
