@@ -58,11 +58,13 @@ func (g Graph) AddNode(node Node) bool {
 }
 
 // Delete a node by id
-func (g *Graph) DeleteNode(id string) bool {
+func (g *Graph) DeleteNode(id string) *Node {
 
 	if !g.ExistNode(id) {
-		return false
+		return nil
 	}
+
+	node := g.NodeMap[id]
 
 	delete(g.NodeMap, id)
 
@@ -82,7 +84,7 @@ func (g *Graph) DeleteNode(id string) bool {
 		}
 	}
 
-	return true
+	return &node
 }
 
 // Add new Edge in the Graph
@@ -114,6 +116,22 @@ func (g *Graph) AddEdge(edge Edge) error {
 	}
  	
 	return nil
+}
+
+// Delete a edge
+func (g *Graph) DeleteEdge(edge Edge) Edge {
+
+	removedEdge := g.EdgeMap[edge.name]
+
+	firstMap := g.IncomingNodeConnection[edge.begin.name]
+	delete(firstMap, edge.end.name)
+
+	secondMap := g.IncomingNodeConnection[edge.end.name]
+	delete(secondMap, edge.begin.name)
+
+	delete(g.EdgeMap, edge.name)
+ 	
+	return removedEdge
 }
 
 // Return a graphviz format string of all graph
