@@ -29,6 +29,7 @@ func NewGraph() *Graph {
 	}
 }
 
+
 func (g *Graph) ExistNode(id string) bool {
 	_, ok := g.NodeMap[id]
 	return ok
@@ -45,7 +46,7 @@ func (g *Graph) GetNode(id string) Node {
 }
 
 // Add new node in the Graph
-func (g *Graph) AddNode(node Node) bool {
+func (g Graph) AddNode(node Node) bool {
 
 	if g.ExistNode(node.name) {
 		return false
@@ -116,3 +117,42 @@ func (g *Graph) AddEdge(edge Edge) error {
 	return nil
 }
 
+
+func (g *Graph) String() string {
+
+	fmt.Printf("digraph %s {\n", "Teste")
+
+	for _, node := range g.NodeMap {
+		fmt.Printf("\t%s;\n", node.name)
+	}
+
+
+	for _, edge := range g.EdgeMap {
+		// fmt.Printf("Edge: %s src %s dst %s\n", edge.name, edge.src.name, edge.dst.name)	
+		fmt.Printf("\t%s -> %s [label=%s, color=red];\n", edge.src.name, edge.dst.name, edge.name)
+	}
+
+	/*for key, sublist := range g.IncomingNodeConnection {
+		fmt.Printf("IncKey %s: ", key)
+
+		for _, node := range sublist {
+			fmt.Printf("%s ", node.name)
+		}
+
+		fmt.Printf("\n")
+	}
+
+	for key, sublist := range g.OutgoingNodeConnection {
+		fmt.Printf("OutKey %s: ", key)
+
+		for _, node := range sublist {
+			fmt.Printf("%s  ", node.name)
+		}
+
+		fmt.Printf("\n")
+	}*/
+
+	fmt.Printf("}\n")
+
+	return "l"
+}
