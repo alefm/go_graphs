@@ -7,20 +7,24 @@ import (
 func main() {
 	graph := NewGraph()
 
-	graph.AddNode(Node{"A"})
-	graph.AddNode(Node{"B"})
-	graph.AddNode(Node{"C"})
-	graph.AddNode(Node{"D"})
+  nodeA := Node{"A"}
+  nodeB := Node{"B"}
+  nodeC := Node{"C"}
+  nodeD := Node{"D"}
 
-	nodeA := graph.GetNode("A")
-	nodeB := graph.GetNode("B")
-	nodeC := graph.GetNode("C")
-	nodeD := graph.GetNode("D")
+	graph.AddNode(nodeA)
+	graph.AddNode(nodeB)
+	graph.AddNode(nodeC)
+	graph.AddNode(nodeD)
 
-	edge := Edge{"E", nodeA, nodeB, 64}
-	edge2 := Edge{"F", nodeC, nodeD, 64}
 
-	err := graph.AddEdge(edge)
+	edge1 := Edge{"a", nodeA, nodeB, 15}
+	edge2 := Edge{"b", nodeC, nodeD, 30}
+
+	edge3 := Edge{"c", nodeB, nodeC, 15}
+	edge4 := Edge{"d", nodeD, nodeA, 30}
+
+	err := graph.AddEdge(edge1)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -28,6 +32,16 @@ func main() {
 	err2 := graph.AddEdge(edge2)
 	if err2 != nil {
 		fmt.Println(err2)
+	}
+
+	err3 := graph.AddEdge(edge3)
+	if err3 != nil {
+		fmt.Println(err3)
+	}
+
+	err4 := graph.AddEdge(edge4)
+	if err4 != nil {
+		fmt.Println(err4)
 	}
 
 	graph.String()
