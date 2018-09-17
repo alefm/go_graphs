@@ -29,7 +29,7 @@ func NewGraph() *Graph {
 	}
 }
 
-
+// Verify if node exist by a given id
 func (g *Graph) ExistNode(id string) bool {
 	_, ok := g.NodeMap[id]
 	return ok
@@ -116,7 +116,7 @@ func (g *Graph) AddEdge(edge Edge) error {
 	return nil
 }
 
-
+// Return a graphviz format string of all graph
 func (g *Graph) String() string {
 
 	fmt.Printf("digraph %s {\n", "Teste")
@@ -154,4 +154,20 @@ func (g *Graph) String() string {
 	fmt.Printf("}\n")
 
 	return "l"
+}
+
+// Verify if two nodes are adjacents
+func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
+
+	for _, edge := range g.EdgeMap {
+
+		if edge.begin.name == nodeA.name && edge.end.name == nodeB.name{
+			return true
+		} else if edge.begin.name == nodeB.name && edge.end.name == nodeA.name {
+			return true
+		}
+
+	}
+
+	return false
 }

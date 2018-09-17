@@ -1,2 +1,5 @@
 .DS_Store
 .idea/*
+output.dot
+go_graphs
+sample.png

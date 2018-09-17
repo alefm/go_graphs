@@ -7,10 +7,10 @@ import (
 func main() {
 	graph := NewGraph()
 
-  nodeA := Node{"A"}
-  nodeB := Node{"B"}
-  nodeC := Node{"C"}
-  nodeD := Node{"D"}
+	nodeA := Node{"A"}
+	nodeB := Node{"B"}
+	nodeC := Node{"C"}
+	nodeD := Node{"D"}
 
 	graph.AddNode(nodeA)
 	graph.AddNode(nodeB)
@@ -45,6 +45,4 @@ func main() {
 	}
 
 	graph.String()
-
-
 }
