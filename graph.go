@@ -102,20 +102,22 @@ func (g *Graph) AddEdge(edge Edge) error {
 
 	g.EdgeMap[edge.name] = edge
 
-	if _, ok := g.IncomingNodeConnection[edge.begin.name]; ok {
-		g.IncomingNodeConnection[edge.begin.name][edge.end.name] = edge.end
+	fmt.Printf("Adicionando a edge %s nodo de inicio %s, nodo de fim %s\n", edge.name, edge.begin.name, edge.end.name)
+
+	if _, ok := g.OutgoingNodeConnection[edge.begin.name]; ok {
+		g.OutgoingNodeConnection[edge.begin.name][edge.end.name] = edge.end
 	} else {
 		tmap := make(map[string]Node)
 		tmap[edge.end.name] = edge.end
-		g.IncomingNodeConnection[edge.begin.name] = tmap
+		g.OutgoingNodeConnection[edge.begin.name] = tmap
 	}
-
-	if _, ok := g.OutgoingNodeConnection[edge.end.name]; ok {
-		g.OutgoingNodeConnection[edge.end.name][edge.begin.name] = edge.begin
+	
+	if _, ok := g.IncomingNodeConnection[edge.end.name]; ok {
+		g.IncomingNodeConnection[edge.end.name][edge.begin.name] = edge.begin
 	} else {
 		tmap := make(map[string]Node)
 		tmap[edge.begin.name] = edge.begin
-		g.OutgoingNodeConnection[edge.end.name] = tmap
+		g.IncomingNodeConnection[edge.end.name] = tmap
 	}
  	
 	return nil
@@ -126,7 +128,7 @@ func (g *Graph) DeleteEdge(edge Edge) Edge {
 
 	removedEdge := g.EdgeMap[edge.name]
 
-	firstMap := g.IncomingNodeConnection[edge.begin.name]
+	firstMap := g.OutgoingNodeConnection[edge.begin.name]
 	delete(firstMap, edge.end.name)
 
 	secondMap := g.IncomingNodeConnection[edge.end.name]
@@ -185,4 +187,18 @@ func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
 	}
 
 	return false
+}
+
+// Print incoming connections
+func (g *Graph) printIncomingConnections() {
+	for key, value := range g.IncomingNodeConnection {
+		fmt.Println("Incomming Map: ", key, value)
+	}
+}
+
+// Print outgoung connections
+func (g *Graph) printOutgoingConnections() {
+	for key, value := range g.OutgoingNodeConnection {
+		fmt.Println("Outgoing Map: ", key, value)
+	}
 }

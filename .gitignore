@@ -3,3 +3,4 @@
 output.dot
 go_graphs
 sample.png
+gopath/*
