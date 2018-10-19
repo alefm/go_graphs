@@ -1,5 +1,6 @@
 package main
 
+// Edge structure
 type Edge struct {
 	name   string // unique id
 	begin  Node
@@ -7,16 +8,17 @@ type Edge struct {
 	weight float64
 }
 
-
+// GetName - return current edge name
 func (e Edge) GetName() string {
-  return e.name
+	return e.name
 }
 
+// GetWeight - return current edge weight
 func (e Edge) GetWeight() float64 {
-  return e.weight
+	return e.weight
 }
 
-// return source and destination nodes.
+// GetNodes - return source and destination nodes.
 func (e Edge) GetNodes() (Node, Node) {
-  return e.begin, e.end
+	return e.begin, e.end
 }

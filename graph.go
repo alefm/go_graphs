@@ -1,12 +1,13 @@
 package main
 
 import (
-  "fmt"
-  "os"
-  "log"
-  "bytes"
+	"bytes"
+	"fmt"
+	"log"
+	"os"
 )
 
+// Graph structure
 type Graph struct {
 
 	//Store all nodes in the graph
@@ -22,7 +23,7 @@ type Graph struct {
 	OutgoingNodeConnection map[string]map[string]Node
 }
 
-// newGraph returns a new Graph.
+// NewGraph returns a new Graph.
 func NewGraph() *Graph {
 	return &Graph{
 		NodeMap:                make(map[string]Node),
@@ -32,23 +33,23 @@ func NewGraph() *Graph {
 	}
 }
 
-// Verify if node exist by a given id
+// ExistNode verify if node exist by a given id
 func (g *Graph) ExistNode(id string) bool {
 	_, ok := g.NodeMap[id]
 	return ok
 }
 
-// Return the current count of nodes in the Graph
+// GetNodeCount Return the current count of nodes in the Graph
 func (g *Graph) GetNodeCount() int {
 	return len(g.NodeMap)
 }
 
-// Get a node in the Graph by id
+// GetNode - Get a node in the Graph by id
 func (g *Graph) GetNode(id string) Node {
 	return g.NodeMap[id]
 }
 
-// Add new node in the Graph
+// AddNode - Add new node in the Graph
 func (g Graph) AddNode(node Node) bool {
 
 	if g.ExistNode(node.name) {
@@ -60,7 +61,7 @@ func (g Graph) AddNode(node Node) bool {
 	return true
 }
 
-// Delete a node by id
+// DeleteNode - Delete a node by id
 func (g *Graph) DeleteNode(id string) *Node {
 
 	if !g.ExistNode(id) {
@@ -90,14 +91,14 @@ func (g *Graph) DeleteNode(id string) *Node {
 	return &node
 }
 
-// Add new Edge in the Graph
+// AddEdge - Add new Edge in the Graph
 func (g *Graph) AddEdge(edge Edge) error {
 
 	if !g.ExistNode(edge.begin.name) {
-		return fmt.Errorf("%s does not exist in the graph.", edge.begin)
+		return fmt.Errorf("%s does not exist in the graph", edge.begin)
 	}
 	if !g.ExistNode(edge.end.name) {
-		return fmt.Errorf("%s does not exist in the graph.", edge.end)
+		return fmt.Errorf("%s does not exist in the graph", edge.end)
 	}
 
 	g.EdgeMap[edge.name] = edge
@@ -111,7 +112,7 @@ func (g *Graph) AddEdge(edge Edge) error {
 		tmap[edge.end.name] = edge.end
 		g.OutgoingNodeConnection[edge.begin.name] = tmap
 	}
-	
+
 	if _, ok := g.IncomingNodeConnection[edge.end.name]; ok {
 		g.IncomingNodeConnection[edge.end.name][edge.begin.name] = edge.begin
 	} else {
@@ -119,11 +120,11 @@ func (g *Graph) AddEdge(edge Edge) error {
 		tmap[edge.begin.name] = edge.begin
 		g.IncomingNodeConnection[edge.end.name] = tmap
 	}
- 	
+
 	return nil
 }
 
-// Delete a edge
+// DeleteEdge - Delete a edge
 func (g *Graph) DeleteEdge(edge Edge) Edge {
 
 	removedEdge := g.EdgeMap[edge.name]
@@ -135,19 +136,20 @@ func (g *Graph) DeleteEdge(edge Edge) Edge {
 	delete(secondMap, edge.begin.name)
 
 	delete(g.EdgeMap, edge.name)
- 	
+
 	return removedEdge
 }
 
+// WriteToFile - Write the entire graph as dot format in input file
 func (g *Graph) WriteToFile(fileName string) {
 
 	file, err := os.Create(fileName)
-    if err != nil {
-        log.Fatal("Cannot create file", err)
-    }
-    defer file.Close()
+	if err != nil {
+		log.Fatal("Cannot create file", err)
+	}
+	defer file.Close()
 
-    fmt.Fprintf(file, g.String())
+	fmt.Fprintf(file, g.String())
 }
 
 // Return a graphviz format string of all graph
@@ -155,7 +157,7 @@ func (g *Graph) String() string {
 	var buffer bytes.Buffer
 
 	s := fmt.Sprintf("digraph %s {\n", "Teste")
- 	buffer.WriteString(s)
+	buffer.WriteString(s)
 
 	for _, node := range g.NodeMap {
 		s = fmt.Sprintf("\t%s;\n", node.name)
@@ -178,7 +180,7 @@ func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
 
 	for _, edge := range g.EdgeMap {
 
-		if edge.begin.name == nodeA.name && edge.end.name == nodeB.name{
+		if edge.begin.name == nodeA.name && edge.end.name == nodeB.name {
 			return true
 		} else if edge.begin.name == nodeB.name && edge.end.name == nodeA.name {
 			return true
