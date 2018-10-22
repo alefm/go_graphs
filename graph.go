@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math"
 	"os"
 )
 
@@ -103,8 +104,6 @@ func (g *Graph) AddEdge(edge Edge) error {
 
 	g.EdgeMap[edge.name] = edge
 
-	fmt.Printf("Adicionando a edge %s nodo de inicio %s, nodo de fim %s\n", edge.name, edge.begin.name, edge.end.name)
-
 	if _, ok := g.OutgoingNodeConnection[edge.begin.name]; ok {
 		g.OutgoingNodeConnection[edge.begin.name][edge.end.name] = edge.end
 	} else {
@@ -203,4 +202,44 @@ func (g *Graph) printOutgoingConnections() {
 	for key, value := range g.OutgoingNodeConnection {
 		fmt.Println("Outgoing Map: ", key, value)
 	}
+}
+
+func (g *Graph) floyd() {
+	numberVertices := len(g.NodeMap)
+
+	/* Created 2D map */
+	shortestPath := make(map[string]map[string]float64, numberVertices)
+	for _, value := range g.NodeMap {
+		shortestPath[value.name] = make(map[string]float64, numberVertices)
+	}
+
+	/* Fill 2D map with 0's and infinities */
+	for _, node := range g.NodeMap {
+		for _, secondNode := range g.NodeMap {
+			if node.name == secondNode.name {
+				shortestPath[node.name][secondNode.name] = 0
+			} else {
+				shortestPath[node.name][secondNode.name] = math.Inf(0)
+			}
+		}
+	}
+
+	//fill shortestPath with current edge weight(u,v)
+	for _, edge := range g.EdgeMap {
+		shortestPath[edge.begin.name][edge.end.name] = edge.weight
+	}
+
+	for k := range shortestPath {
+		for i := range shortestPath {
+			for j := range shortestPath {
+
+				if shortestPath[i][j] > (shortestPath[i][k] + shortestPath[k][j]) {
+					shortestPath[i][j] = shortestPath[i][k] + shortestPath[k][j]
+				}
+
+			}
+		}
+	}
+
+	fmt.Println(shortestPath)
 }

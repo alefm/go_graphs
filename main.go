@@ -7,22 +7,21 @@ import (
 func main() {
 	graph := NewGraph()
 
-	nodeA := Node{"A"}
-	nodeB := Node{"B"}
-	nodeC := Node{"C"}
-	nodeD := Node{"D"}
+	node1 := Node{"1"}
+	node2 := Node{"2"}
+	node3 := Node{"3"}
+	node4 := Node{"4"}
 
-	graph.AddNode(nodeA)
-	graph.AddNode(nodeB)
-	graph.AddNode(nodeC)
-	graph.AddNode(nodeD)
+	graph.AddNode(node1)
+	graph.AddNode(node2)
+	graph.AddNode(node3)
+	graph.AddNode(node4)
 
-
-	edge1 := Edge{"a", nodeA, nodeB, 15}
-	edge2 := Edge{"b", nodeC, nodeD, 30}
-
-	edge3 := Edge{"c", nodeB, nodeC, 15}
-	edge4 := Edge{"d", nodeD, nodeA, 30}
+	edge1 := Edge{"a", node2, node1, 4}
+	edge2 := Edge{"b", node1, node3, -2}
+	edge3 := Edge{"c", node3, node4, 2}
+	edge4 := Edge{"d", node4, node2, -1}
+	edge5 := Edge{"e", node2, node3, 3}
 
 	err := graph.AddEdge(edge1)
 	if err != nil {
@@ -44,5 +43,11 @@ func main() {
 		fmt.Println(err4)
 	}
 
+	err5 := graph.AddEdge(edge5)
+	if err4 != nil {
+		fmt.Println(err5)
+	}
+
 	graph.WriteToFile("output.dot")
+	graph.floyd()
 }
