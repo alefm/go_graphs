@@ -17,6 +17,8 @@ func main() {
 	graph.AddNode(node3)
 	graph.AddNode(node4)
 
+	fmt.Println(graph.NodeMap)
+
 	edge1 := Edge{"a", node2, node1, 4}
 	edge2 := Edge{"b", node1, node3, -2}
 	edge3 := Edge{"c", node3, node4, 2}
