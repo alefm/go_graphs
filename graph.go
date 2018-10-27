@@ -12,10 +12,10 @@ import (
 type Graph struct {
 
 	//Store all nodes in the graph
-	NodeMap []Node
+	NodeList []Node
 
 	//Store all edges in the graph
-	EdgeMap []Edge
+	EdgeList []Edge
 
 	// IncomingNodeConnection maps its Node to incoming Nodes with its edge weight (incoming edges to its Node).
 	IncomingNodeConnection map[string]map[string]Node
@@ -27,8 +27,8 @@ type Graph struct {
 // NewGraph returns a new Graph.
 func NewGraph() *Graph {
 	return &Graph{
-		NodeMap:                make([]Node, 0),
-		EdgeMap:                make([]Edge, 0),
+		NodeList:                make([]Node, 0),
+		EdgeList:                make([]Edge, 0),
 		IncomingNodeConnection: make(map[string]map[string]Node),
 		OutgoingNodeConnection: make(map[string]map[string]Node),
 	}
@@ -36,7 +36,7 @@ func NewGraph() *Graph {
 
 // ExistNode verify if node exist by a given id and return current slice index
 func (g *Graph) ExistNode(id string) int {
-	for key, value := range g.NodeMap {
+	for key, value := range g.NodeList {
 		if value.name == id {
 			return key
 		}
@@ -45,9 +45,9 @@ func (g *Graph) ExistNode(id string) int {
 }
 
 // ExistEdge verify if edge exist by a given begin and end id
-func (g *Graph) ExistEdge(edgeName string, begin string, end string) int {
-	for key, value := range g.EdgeMap {
-		if value.name == edgeName && value.begin.name == begin && value.end.name == end {
+func (g *Graph) ExistEdge(begin string, end string) int {
+	for key, value := range g.EdgeList {
+		if value.begin.name == begin && value.end.name == end {
 			return key
 		}
 	}
@@ -56,12 +56,12 @@ func (g *Graph) ExistEdge(edgeName string, begin string, end string) int {
 
 // GetNodeCount Return the current count of nodes in the Graph
 func (g *Graph) GetNodeCount() int {
-	return len(g.NodeMap)
+	return len(g.NodeList)
 }
 
 // GetNode - Get a node in the Graph by id
 func (g *Graph) GetNode(id string) *Node {
-	for _, value := range g.NodeMap {
+	for _, value := range g.NodeList {
 		if value.name == id {
 			return &value
 		}
@@ -71,7 +71,7 @@ func (g *Graph) GetNode(id string) *Node {
 
 // GetEdge - Get a edge in the Graph by id
 func (g *Graph) GetEdge(id string) *Edge {
-	for _, value := range g.EdgeMap {
+	for _, value := range g.EdgeList {
 		if value.name == id {
 			return &value
 		}
@@ -80,14 +80,13 @@ func (g *Graph) GetEdge(id string) *Edge {
 }
 
 // AddNode - Add new node in the Graph
-func (g Graph) AddNode(node Node) bool {
+func (g *Graph) AddNode(node Node) bool {
 
 	if g.ExistNode(node.name) >= 0 {
 		return false
 	}
-	fmt.Println("Adicionando node...", node.name)
-	g.NodeMap = append(g.NodeMap, node)
-	fmt.Println(g.NodeMap)
+
+	g.NodeList = append(g.NodeList, node)
 	return true
 }
 
@@ -102,7 +101,7 @@ func (g *Graph) DeleteNode(id string) *Node {
 
 	// Removing node from slice
 	index := g.ExistNode(id)
-	g.NodeMap = append(g.NodeMap[:index], g.NodeMap[index+1:]...)
+	g.NodeList = append(g.NodeList[:index], g.NodeList[index+1:]...)
 
 	delete(g.IncomingNodeConnection, id)
 	for _, submap := range g.IncomingNodeConnection {
@@ -114,10 +113,10 @@ func (g *Graph) DeleteNode(id string) *Node {
 		delete(submap, id)
 	}
 
-	for key, edge := range g.EdgeMap {
+	for key, edge := range g.EdgeList {
 		if edge.begin.name == id || edge.end.name == id {
 			// Removing edge from slice
-			g.EdgeMap = append(g.EdgeMap[:key], g.EdgeMap[key+1:]...)
+			g.EdgeList = append(g.EdgeList[:key], g.EdgeList[key+1:]...)
 		}
 	}
 
@@ -133,7 +132,7 @@ func (g *Graph) AddEdge(edge Edge) error {
 		return fmt.Errorf("%s does not exist in the graph", edge.end)
 	}
 
-	g.EdgeMap = append(g.EdgeMap, edge)
+	g.EdgeList = append(g.EdgeList, edge)
 
 	if _, ok := g.OutgoingNodeConnection[edge.begin.name]; ok {
 		g.OutgoingNodeConnection[edge.begin.name][edge.end.name] = edge.end
@@ -157,13 +156,13 @@ func (g *Graph) AddEdge(edge Edge) error {
 // DeleteEdge - Delete a edge
 func (g *Graph) DeleteEdge(edge Edge) *Edge {
 
-	index := g.ExistEdge(edge.name, edge.begin.name, edge.end.name)
+	index := g.ExistEdge(edge.begin.name, edge.end.name)
 
 	if index < 0 {
 		return nil
 	}
 
-	removedEdge := g.EdgeMap[index]
+	removedEdge := g.EdgeList[index]
 
 	firstMap := g.OutgoingNodeConnection[edge.begin.name]
 	delete(firstMap, edge.end.name)
@@ -171,7 +170,7 @@ func (g *Graph) DeleteEdge(edge Edge) *Edge {
 	secondMap := g.IncomingNodeConnection[edge.end.name]
 	delete(secondMap, edge.begin.name)
 
-	g.EdgeMap = append(g.EdgeMap[:index], g.EdgeMap[index+1:]...)
+	g.EdgeList = append(g.EdgeList[:index], g.EdgeList[index+1:]...)
 
 	return &removedEdge
 }
@@ -195,12 +194,12 @@ func (g *Graph) String() string {
 	s := fmt.Sprintf("digraph %s {\n", "Teste")
 	buffer.WriteString(s)
 
-	for _, node := range g.NodeMap {
+	for _, node := range g.NodeList {
 		s = fmt.Sprintf("\t%s;\n", node.name)
 		buffer.WriteString(s)
 	}
 
-	for _, edge := range g.EdgeMap {
+	for _, edge := range g.EdgeList {
 		s = fmt.Sprintf("\t%s -> %s [label=%s, color=blue dir=none];\n", edge.begin.name, edge.end.name, edge.name)
 		buffer.WriteString(s)
 	}
@@ -214,7 +213,7 @@ func (g *Graph) String() string {
 // Verify if two nodes are adjacents
 func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
 
-	for _, edge := range g.EdgeMap {
+	for _, edge := range g.EdgeList {
 
 		if edge.begin.name == nodeA.name && edge.end.name == nodeB.name {
 			return true
@@ -242,35 +241,32 @@ func (g *Graph) printOutgoingConnections() {
 }
 
 func (g *Graph) floyd() {
-	numberVertices := len(g.NodeMap)
+	numberVertices := len(g.NodeList)
 
-	/* Created 2D map */
-	shortestPath := make(map[string]map[string]float64, numberVertices)
-	predecessor := make(map[string]map[string]float64, numberVertices)
-	for _, value := range g.NodeMap {
-		shortestPath[value.name] = make(map[string]float64, numberVertices)
-		predecessor[value.name] = make(map[string]float64, numberVertices)
+	/* Created 2D slice */
+	shortestPath := make([][]float64, numberVertices)
+	// predecessor := make([][]Node, numberVertices)
+
+	for index := range shortestPath {
+		shortestPath[index] = make([]float64, numberVertices)
 	}
 
-	/* Fill 2D map with 0's and infinities */
-	for _, node := range g.NodeMap {
-		for _, secondNode := range g.NodeMap {
-			if node.name == secondNode.name {
-				shortestPath[node.name][secondNode.name] = 0
+	/* Fill 2D slice */
+	for i := 0; i < len(g.NodeList); i++ {
+		for j := 0; j < len(g.NodeList); j++ {
+			if index := g.ExistEdge(g.NodeList[i].name, g.NodeList[j].name); index >= 0 {
+				shortestPath[i][j] = g.EdgeList[index].weight
+			} else if g.NodeList[i].name == g.NodeList[j].name {
+				shortestPath[i][j] = 0
 			} else {
-				shortestPath[node.name][secondNode.name] = math.Inf(0)
+				shortestPath[i][j] = math.Inf(0)
 			}
 		}
 	}
 
-	//fill shortestPath with current edge weight(u,v)
-	for _, edge := range g.EdgeMap {
-		shortestPath[edge.begin.name][edge.end.name] = edge.weight
-	}
-
-	for k := range shortestPath {
-		for i := range shortestPath {
-			for j := range shortestPath {
+	for k := 0; k < len(shortestPath); k++ {
+		for i := 0; i < len(shortestPath); i++ {
+			for j := 0; j < len(shortestPath); j++ {
 
 				if shortestPath[i][j] > (shortestPath[i][k] + shortestPath[k][j]) {
 					shortestPath[i][j] = shortestPath[i][k] + shortestPath[k][j]
