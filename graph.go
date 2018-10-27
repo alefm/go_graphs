@@ -16,12 +16,6 @@ type Graph struct {
 
 	//Store all edges in the graph
 	EdgeList []Edge
-
-	// IncomingNodeConnection maps its Node to incoming Nodes with its edge weight (incoming edges to its Node).
-	IncomingNodeConnection map[string]map[string]Node
-
-	// OutgoingNodeConnection maps its Node to outgoing Nodes with its edge weight (outgoing edges from its Node).
-	OutgoingNodeConnection map[string]map[string]Node
 }
 
 // NewGraph returns a new Graph.
@@ -29,8 +23,6 @@ func NewGraph() *Graph {
 	return &Graph{
 		NodeList:                make([]Node, 0),
 		EdgeList:                make([]Edge, 0),
-		IncomingNodeConnection: make(map[string]map[string]Node),
-		OutgoingNodeConnection: make(map[string]map[string]Node),
 	}
 }
 
@@ -103,16 +95,6 @@ func (g *Graph) DeleteNode(id string) *Node {
 	index := g.ExistNode(id)
 	g.NodeList = append(g.NodeList[:index], g.NodeList[index+1:]...)
 
-	delete(g.IncomingNodeConnection, id)
-	for _, submap := range g.IncomingNodeConnection {
-		delete(submap, id)
-	}
-
-	delete(g.OutgoingNodeConnection, id)
-	for _, submap := range g.OutgoingNodeConnection {
-		delete(submap, id)
-	}
-
 	for key, edge := range g.EdgeList {
 		if edge.begin.name == id || edge.end.name == id {
 			// Removing edge from slice
@@ -126,29 +108,13 @@ func (g *Graph) DeleteNode(id string) *Node {
 // AddEdge - Add new Edge in the Graph
 func (g *Graph) AddEdge(edge Edge) error {
 	if g.ExistNode(edge.begin.name) < 0 {
-		return fmt.Errorf("%s does not exist in the graph", edge.begin)
+		return fmt.Errorf("%s does not exist in the graph", edge.begin.name)
 	}
 	if g.ExistNode(edge.end.name) < 0 {
-		return fmt.Errorf("%s does not exist in the graph", edge.end)
+		return fmt.Errorf("%s does not exist in the graph", edge.end.name)
 	}
 
 	g.EdgeList = append(g.EdgeList, edge)
-
-	if _, ok := g.OutgoingNodeConnection[edge.begin.name]; ok {
-		g.OutgoingNodeConnection[edge.begin.name][edge.end.name] = edge.end
-	} else {
-		tmap := make(map[string]Node)
-		tmap[edge.end.name] = edge.end
-		g.OutgoingNodeConnection[edge.begin.name] = tmap
-	}
-
-	if _, ok := g.IncomingNodeConnection[edge.end.name]; ok {
-		g.IncomingNodeConnection[edge.end.name][edge.begin.name] = edge.begin
-	} else {
-		tmap := make(map[string]Node)
-		tmap[edge.begin.name] = edge.begin
-		g.IncomingNodeConnection[edge.end.name] = tmap
-	}
 
 	return nil
 }
@@ -163,12 +129,6 @@ func (g *Graph) DeleteEdge(edge Edge) *Edge {
 	}
 
 	removedEdge := g.EdgeList[index]
-
-	firstMap := g.OutgoingNodeConnection[edge.begin.name]
-	delete(firstMap, edge.end.name)
-
-	secondMap := g.IncomingNodeConnection[edge.end.name]
-	delete(secondMap, edge.begin.name)
 
 	g.EdgeList = append(g.EdgeList[:index], g.EdgeList[index+1:]...)
 
@@ -195,12 +155,12 @@ func (g *Graph) String() string {
 	buffer.WriteString(s)
 
 	for _, node := range g.NodeList {
-		s = fmt.Sprintf("\t%s;\n", node.name)
+		s = fmt.Sprintf("\t%s [color=%s];\n", node.name, node.GetColor())
 		buffer.WriteString(s)
 	}
 
 	for _, edge := range g.EdgeList {
-		s = fmt.Sprintf("\t%s -> %s [label=%s, color=blue dir=none];\n", edge.begin.name, edge.end.name, edge.name)
+		s = fmt.Sprintf("\t%s -> %s [label=%s, color=%s, dir=none];\n", edge.begin.name, edge.end.name, edge.name, edge.GetColor())
 		buffer.WriteString(s)
 	}
 
@@ -224,20 +184,6 @@ func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
 	}
 
 	return false
-}
-
-// Print incoming connections
-func (g *Graph) printIncomingConnections() {
-	for key, value := range g.IncomingNodeConnection {
-		fmt.Println("Incomming Map: ", key, value)
-	}
-}
-
-// Print outgoung connections
-func (g *Graph) printOutgoingConnections() {
-	for key, value := range g.OutgoingNodeConnection {
-		fmt.Println("Outgoing Map: ", key, value)
-	}
 }
 
 func (g *Graph) FloydAlgorithm() ([][]float64, [][]string) {
