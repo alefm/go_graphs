@@ -240,15 +240,16 @@ func (g *Graph) printOutgoingConnections() {
 	}
 }
 
-func (g *Graph) floyd() {
+func (g *Graph) FloydAlgorithm() ([][]float64, [][]string) {
 	numberVertices := len(g.NodeList)
 
 	/* Created 2D slice */
 	shortestPath := make([][]float64, numberVertices)
-	// predecessor := make([][]Node, numberVertices)
+	predecessor := make([][]string, numberVertices)
 
 	for index := range shortestPath {
 		shortestPath[index] = make([]float64, numberVertices)
+		predecessor[index] = make([]string, numberVertices)
 	}
 
 	/* Fill 2D slice */
@@ -256,12 +257,17 @@ func (g *Graph) floyd() {
 		for j := 0; j < len(g.NodeList); j++ {
 			if index := g.ExistEdge(g.NodeList[i].name, g.NodeList[j].name); index >= 0 {
 				shortestPath[i][j] = g.EdgeList[index].weight
-			} else if g.NodeList[i].name == g.NodeList[j].name {
+			} else if i == j {
 				shortestPath[i][j] = 0
 			} else {
 				shortestPath[i][j] = math.Inf(0)
 			}
 		}
+	}
+
+	/* Fill 2D slice predecessor */
+	for _, value := range g.EdgeList {
+		predecessor[g.ExistNode(value.begin.name)][g.ExistNode(value.end.name)] = value.end.name
 	}
 
 	for k := 0; k < len(shortestPath); k++ {
@@ -270,11 +276,24 @@ func (g *Graph) floyd() {
 
 				if shortestPath[i][j] > (shortestPath[i][k] + shortestPath[k][j]) {
 					shortestPath[i][j] = shortestPath[i][k] + shortestPath[k][j]
-				}
-
+					predecessor[i][j] = predecessor[i][k]
+				} 
 			}
 		}
 	}
 
-	fmt.Println(shortestPath)
+	return shortestPath, predecessor
 }
+
+func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) ([]string){
+	path := make([]string, 0)
+
+	path = append(path, begin)
+	for begin != end {
+		begin = predecessor[g.ExistNode(begin)][g.ExistNode(end)]
+		path = append(path, begin)
+	}
+	
+	return path
+}
+    

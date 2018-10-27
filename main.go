@@ -49,5 +49,8 @@ func main() {
 	}
 
 	graph.WriteToFile("output.dot")
-	graph.floyd()
+	_, predecessor := graph.FloydAlgorithm()
+	path := graph.FloydPath(predecessor, node1.name, node4.name)
+
+	fmt.Println(path)
 }
