@@ -21,15 +21,15 @@ type Graph struct {
 // NewGraph returns a new Graph.
 func NewGraph() *Graph {
 	return &Graph{
-		NodeList:                make([]Node, 0),
-		EdgeList:                make([]Edge, 0),
+		NodeList: make([]Node, 0),
+		EdgeList: make([]Edge, 0),
 	}
 }
 
 // ExistNode verify if node exist by a given id and return current slice index
 func (g *Graph) ExistNode(id string) int {
 	for key, value := range g.NodeList {
-		if value.name == id {
+		if value.Name == id {
 			return key
 		}
 	}
@@ -39,7 +39,7 @@ func (g *Graph) ExistNode(id string) int {
 // ExistEdge verify if edge exist by a given begin and end id
 func (g *Graph) ExistEdge(begin string, end string) int {
 	for key, value := range g.EdgeList {
-		if value.begin.name == begin && value.end.name == end {
+		if value.begin.Name == begin && value.end.Name == end {
 			return key
 		}
 	}
@@ -54,7 +54,7 @@ func (g *Graph) GetNodeCount() int {
 // GetNode - Get a node in the Graph by id
 func (g *Graph) GetNode(id string) *Node {
 	for _, value := range g.NodeList {
-		if value.name == id {
+		if value.Name == id {
 			return &value
 		}
 	}
@@ -74,7 +74,7 @@ func (g *Graph) GetEdge(id string) *Edge {
 // AddNode - Add new node in the Graph
 func (g *Graph) AddNode(node Node) bool {
 
-	if g.ExistNode(node.name) >= 0 {
+	if g.ExistNode(node.Name) >= 0 {
 		return false
 	}
 
@@ -96,7 +96,7 @@ func (g *Graph) DeleteNode(id string) *Node {
 	g.NodeList = append(g.NodeList[:index], g.NodeList[index+1:]...)
 
 	for key, edge := range g.EdgeList {
-		if edge.begin.name == id || edge.end.name == id {
+		if edge.begin.Name == id || edge.end.Name == id {
 			// Removing edge from slice
 			g.EdgeList = append(g.EdgeList[:key], g.EdgeList[key+1:]...)
 		}
@@ -107,11 +107,11 @@ func (g *Graph) DeleteNode(id string) *Node {
 
 // AddEdge - Add new Edge in the Graph
 func (g *Graph) AddEdge(edge Edge) error {
-	if g.ExistNode(edge.begin.name) < 0 {
-		return fmt.Errorf("%s does not exist in the graph", edge.begin.name)
+	if g.ExistNode(edge.begin.Name) < 0 {
+		return fmt.Errorf("%s does not exist in the graph", edge.begin.Name)
 	}
-	if g.ExistNode(edge.end.name) < 0 {
-		return fmt.Errorf("%s does not exist in the graph", edge.end.name)
+	if g.ExistNode(edge.end.Name) < 0 {
+		return fmt.Errorf("%s does not exist in the graph", edge.end.Name)
 	}
 
 	g.EdgeList = append(g.EdgeList, edge)
@@ -122,7 +122,7 @@ func (g *Graph) AddEdge(edge Edge) error {
 // DeleteEdge - Delete a edge
 func (g *Graph) DeleteEdge(edge Edge) *Edge {
 
-	index := g.ExistEdge(edge.begin.name, edge.end.name)
+	index := g.ExistEdge(edge.begin.Name, edge.end.Name)
 
 	if index < 0 {
 		return nil
@@ -155,12 +155,12 @@ func (g *Graph) String() string {
 	buffer.WriteString(s)
 
 	for _, node := range g.NodeList {
-		s = fmt.Sprintf("\t%s [color=%s];\n", node.name, node.GetColor())
+		s = fmt.Sprintf("\t%s [color=%s];\n", node.Name, node.GetColor())
 		buffer.WriteString(s)
 	}
 
 	for _, edge := range g.EdgeList {
-		s = fmt.Sprintf("\t%s -> %s [label=%.2f, color=%s, dir=none];\n", edge.begin.name, edge.end.name, edge.weight, edge.GetColor())
+		s = fmt.Sprintf("\t%s -> %s [label=%.2f, color=%s, dir=none];\n", edge.begin.Name, edge.end.Name, edge.weight, edge.GetColor())
 		buffer.WriteString(s)
 	}
 
@@ -175,9 +175,9 @@ func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
 
 	for _, edge := range g.EdgeList {
 
-		if edge.begin.name == nodeA.name && edge.end.name == nodeB.name {
+		if edge.begin.Name == nodeA.Name && edge.end.Name == nodeB.Name {
 			return true
-		} else if edge.begin.name == nodeB.name && edge.end.name == nodeA.name {
+		} else if edge.begin.Name == nodeB.Name && edge.end.Name == nodeA.Name {
 			return true
 		}
 
@@ -201,7 +201,7 @@ func (g *Graph) FloydAlgorithm() ([][]float64, [][]string) {
 	/* Fill 2D slice */
 	for i := 0; i < len(g.NodeList); i++ {
 		for j := 0; j < len(g.NodeList); j++ {
-			if index := g.ExistEdge(g.NodeList[i].name, g.NodeList[j].name); index >= 0 {
+			if index := g.ExistEdge(g.NodeList[i].Name, g.NodeList[j].Name); index >= 0 {
 				shortestPath[i][j] = g.EdgeList[index].weight
 			} else if i == j {
 				shortestPath[i][j] = 0
@@ -213,7 +213,7 @@ func (g *Graph) FloydAlgorithm() ([][]float64, [][]string) {
 
 	/* Fill 2D slice predecessor */
 	for _, value := range g.EdgeList {
-		predecessor[g.ExistNode(value.begin.name)][g.ExistNode(value.end.name)] = value.end.name
+		predecessor[g.ExistNode(value.begin.Name)][g.ExistNode(value.end.Name)] = value.end.Name
 	}
 
 	for k := 0; k < len(shortestPath); k++ {
@@ -223,7 +223,7 @@ func (g *Graph) FloydAlgorithm() ([][]float64, [][]string) {
 				if shortestPath[i][j] > (shortestPath[i][k] + shortestPath[k][j]) {
 					shortestPath[i][j] = shortestPath[i][k] + shortestPath[k][j]
 					predecessor[i][j] = predecessor[i][k]
-				} 
+				}
 			}
 		}
 	}
@@ -231,7 +231,7 @@ func (g *Graph) FloydAlgorithm() ([][]float64, [][]string) {
 	return shortestPath, predecessor
 }
 
-func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) ([]string){
+func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) []string {
 	path := make([]string, 0)
 
 	path = append(path, begin)
@@ -239,7 +239,6 @@ func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) ([]s
 		begin = predecessor[g.ExistNode(begin)][g.ExistNode(end)]
 		path = append(path, begin)
 	}
-	
+
 	return path
 }
-    

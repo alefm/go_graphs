@@ -1,34 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"encoding/json"
-	//"log"
+	"fmt"
 	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
+// GetGraph - this is a handler to / requisition
 func GetGraph(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("Entrei graph")
-    return
+	fmt.Println("Entrei graph")
+	return
 }
 
+// GetNodeByName - this is a handler to /nodes/{name} requisition
 func (graph *Graph) GetNodeByName(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("Entrei")
-    params := mux.Vars(r)
-    for _, item := range graph.NodeList {
-	if item.name == params["name"] {
-	    json.NewEncoder(w).Encode(item)
-	    return
+	params := mux.Vars(r)
+	for _, item := range graph.NodeList {
+		if item.Name == params["name"] {
+			json.NewEncoder(w).Encode(&item)
+			return
+		}
 	}
-    }
-    json.NewEncoder(w).Encode(&Node{})
+	json.NewEncoder(w).Encode(&Node{})
 }
 
 func main() {
-
-
-
 
 	graph := NewGraph()
 
@@ -75,7 +73,7 @@ func main() {
 
 	graph.WriteToFile("output.dot")
 	_, predecessor := graph.FloydAlgorithm()
-	path := graph.FloydPath(predecessor, node1.name, node4.name)
+	path := graph.FloydPath(predecessor, node1.Name, node4.Name)
 
 	fmt.Println(path)
 
