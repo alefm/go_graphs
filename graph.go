@@ -160,7 +160,7 @@ func (g *Graph) String() string {
 	}
 
 	for _, edge := range g.EdgeList {
-		s = fmt.Sprintf("\t%s -> %s [label=%s, color=%s, dir=none];\n", edge.begin.name, edge.end.name, edge.name, edge.GetColor())
+		s = fmt.Sprintf("\t%s -> %s [label=%.2f, color=%s, dir=none];\n", edge.begin.name, edge.end.name, edge.weight, edge.GetColor())
 		buffer.WriteString(s)
 	}
 
