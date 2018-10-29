@@ -2,9 +2,34 @@ package main
 
 import (
 	"fmt"
+	"encoding/json"
+	//"log"
+	"net/http"
+	"github.com/gorilla/mux"
 )
 
+func GetGraph(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Entrei graph")
+    return
+}
+
+func (graph *Graph) GetNodeByName(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Entrei")
+    params := mux.Vars(r)
+    for _, item := range graph.NodeList {
+	if item.name == params["name"] {
+	    json.NewEncoder(w).Encode(item)
+	    return
+	}
+    }
+    json.NewEncoder(w).Encode(&Node{})
+}
+
 func main() {
+
+
+
+
 	graph := NewGraph()
 
 	node1 := Node{"1", ""}
@@ -53,4 +78,10 @@ func main() {
 	path := graph.FloydPath(predecessor, node1.name, node4.name)
 
 	fmt.Println(path)
+
+	router := mux.NewRouter()
+	router.HandleFunc("/", GetGraph)
+	router.HandleFunc("/graph/nodes/{name}", graph.GetNodeByName).Methods("GET")
+
+	http.ListenAndServe(":8001", router)
 }

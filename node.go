@@ -3,8 +3,8 @@ package main
 // Node Structure
 type Node struct {
 	// Unique ID
-	name string
-	color string
+	name string `json:"name,omitempty"`
+	color string `json:"color,omitempty"`
 }
 
 // GetName - return current node name
