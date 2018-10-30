@@ -7,12 +7,22 @@ import (
 	"os/exec"
 
 	"github.com/gorilla/mux"
+	"github.com/thedevsaddam/renderer"
 )
+
+var rnd *renderer.Render
+
+func init() {
+	opts := renderer.Options{
+		ParseGlobPattern: "./templates/*.html",
+	}
+
+	rnd = renderer.New(opts)
+}
 
 // GetGraph - this is a handler to / requisition
 func GetGraph(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Entrei graph")
-	return
+	rnd.HTML(w, http.StatusOK, "home", nil)
 }
 
 // GetNodeByName - this is a handler to /nodes/{name} requisition
@@ -73,7 +83,7 @@ func main() {
 	}
 
 	graph.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "graph.png")
+	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
 	cmd.Run()
 
 	_, predecessor := graph.FloydAlgorithm()
@@ -84,6 +94,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
 	router.HandleFunc("/graph/nodes/{name}", graph.GetNodeByName).Methods("GET")
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
-	http.ListenAndServe(":8001", router)
+	http.ListenAndServe(":8000", router)
 }
