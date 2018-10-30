@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os/exec"
 
 	"github.com/gorilla/mux"
 )
@@ -72,6 +73,9 @@ func main() {
 	}
 
 	graph.WriteToFile("output.dot")
+	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "graph.png")
+	cmd.Run()
+
 	_, predecessor := graph.FloydAlgorithm()
 	path := graph.FloydPath(predecessor, node1.Name, node4.Name)
 
