@@ -242,3 +242,41 @@ func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) []st
 
 	return path
 }
+
+func (g *Graph) getNeighbors() [][]Node {
+	neighbors := make([][]Node, len(g.NodeList))
+
+	for i, nodeI := range g.NodeList {
+		for j, nodeJ := range g.NodeList {
+
+			if i != j && g.isAdjacent(nodeI, nodeJ) {
+				neighbors[i] = append(neighbors[i], nodeJ)
+			}
+		}
+	}
+
+	return neighbors
+}
+
+func (g *Graph) Dijsktra(source string) {
+	numberVertices := len(g.NodeList)
+
+	/* Created 2D slice */
+	distance := make([]float64, numberVertices)
+	previous := make([]bool, numberVertices)
+	neighbors := g.getNeighbors()
+
+	sourceIndex := g.ExistNode(source)
+
+	for key := range g.NodeList {
+		if key == sourceIndex {
+			distance[key] = 0
+		} else {
+			distance[key] = math.Inf(0)
+		}
+		previous[key] = false
+	}
+
+	fmt.Println(neighbors)
+
+}

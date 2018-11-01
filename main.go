@@ -90,6 +90,7 @@ func main() {
 	path := graph.FloydPath(predecessor, node1.Name, node4.Name)
 
 	fmt.Println(path)
+	graph.Dijsktra("1")
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
