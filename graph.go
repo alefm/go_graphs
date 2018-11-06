@@ -46,6 +46,17 @@ func (g *Graph) ExistEdge(begin string, end string) int {
 	return -1
 }
 
+// GetEdgeIndex return edge index
+func (g *Graph) GetEdgeIndex(begin string, end string) int {
+	for key, value := range g.EdgeList {
+		if value.begin.Name == begin && value.end.Name == end ||
+			value.begin.Name == end && value.end.Name == begin {
+			return key
+		}
+	}
+	return -1
+}
+
 // GetNodeCount Return the current count of nodes in the Graph
 func (g *Graph) GetNodeCount() int {
 	return len(g.NodeList)
@@ -258,25 +269,76 @@ func (g *Graph) getNeighbors() [][]Node {
 	return neighbors
 }
 
-func (g *Graph) Dijsktra(source string) {
+/* Return the least distance of all to open vertices list */
+func getLeastDistance(distance []float64, verticesName []string, toOpenVertices []string) (float64, int) {
+
+	leastDistance := math.Inf(0)
+	leastIndex := 0
+
+	for index, dist := range distance {
+		if dist < leastDistance && indexOf(verticesName[index], toOpenVertices) >= 0 {
+			leastDistance = dist
+			leastIndex = index
+		}
+	}
+
+	return leastDistance, leastIndex
+}
+
+func indexOf(element string, data []string) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	return -1 //not found.
+}
+
+func (g *Graph) Dijsktra(source string) ([]float64, []string) {
 	numberVertices := len(g.NodeList)
 
 	/* Created 2D slice */
-	distance := make([]float64, numberVertices)
-	previous := make([]bool, numberVertices)
+	var toOpenVertices []string
 	neighbors := g.getNeighbors()
+
+	var verticesName []string
+	distance := make([]float64, numberVertices)
+	previous := make([]string, numberVertices)
 
 	sourceIndex := g.ExistNode(source)
 
-	for key := range g.NodeList {
+	for key, node := range g.NodeList {
 		if key == sourceIndex {
 			distance[key] = 0
 		} else {
 			distance[key] = math.Inf(0)
 		}
-		previous[key] = false
+		previous[key] = "-"
+
+		toOpenVertices = append(toOpenVertices, node.GetName())
+		verticesName = append(verticesName, node.GetName())
 	}
 
-	fmt.Println(neighbors)
+	for len(toOpenVertices) > 0 {
+		_, leastIndex := getLeastDistance(distance, verticesName, toOpenVertices)
+		removeIndex := indexOf(verticesName[leastIndex], toOpenVertices)
 
+		toOpenVertices = append(toOpenVertices[:removeIndex], toOpenVertices[removeIndex+1:]...)
+		leastNeighbors := neighbors[leastIndex]
+
+		for _, neighbor := range leastNeighbors {
+			if index := g.GetEdgeIndex(neighbor.GetName(), g.NodeList[leastIndex].GetName()); index >= 0 &&
+				neighbor.GetName() != source {
+
+				neighborIndex := g.ExistNode(neighbor.GetName())
+
+				if (g.EdgeList[index].GetWeight() + distance[leastIndex]) < distance[neighborIndex] {
+					distance[neighborIndex] = g.EdgeList[index].GetWeight() + distance[leastIndex]
+					previous[neighborIndex] = verticesName[leastIndex]
+				}
+			}
+		}
+	}
+
+	return distance, previous
 }

@@ -52,9 +52,9 @@ func main() {
 	graph.AddNode(node4)
 
 	edge1 := Edge{"a", node2, node1, 4, ""}
-	edge2 := Edge{"b", node1, node3, -2, ""}
+	edge2 := Edge{"b", node1, node3, 2, ""}
 	edge3 := Edge{"c", node3, node4, 2, ""}
-	edge4 := Edge{"d", node4, node2, -1, ""}
+	edge4 := Edge{"d", node4, node2, 1, ""}
 	edge5 := Edge{"e", node2, node3, 3, ""}
 
 	err := graph.AddEdge(edge1)
@@ -89,8 +89,11 @@ func main() {
 	_, predecessor := graph.FloydAlgorithm()
 	path := graph.FloydPath(predecessor, node1.Name, node4.Name)
 
-	fmt.Println(path)
-	graph.Dijsktra("1")
+	fmt.Println("Floyd Shortest Path", path)
+
+	distance, previous := graph.Dijsktra("1")
+	fmt.Println("Dijkstra Distance", distance)
+	fmt.Println("Dijkstra Predecessor", previous)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
