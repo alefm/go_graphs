@@ -86,7 +86,7 @@ func main() {
 	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
 	cmd.Run()
 
-	_, predecessor := graph.FloydAlgorithm()
+	_, predecessor := graph.Floyd()
 	path := graph.FloydPath(predecessor, node1.Name, node4.Name)
 
 	fmt.Println("Floyd Shortest Path", path)
