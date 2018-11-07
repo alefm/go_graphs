@@ -92,3 +92,26 @@ func (g *Graph) Dijsktra(source string) ([]float64, []string) {
 
 	return distance, previous
 }
+
+// DijsktraPath return the shortest path using dijsktra distance and previous slices
+func (g *Graph) DijsktraPath(source string, destination string, distance []float64, previous []string) (float64, []string) {
+	var path []string
+	var vertices []string
+
+	for _, key := range g.NodeList {
+		vertices = append(vertices, key.GetName())
+	}
+
+	indexSrc := indexOf(source, vertices)
+	current := indexOf(destination, vertices) // start in dest index
+	weight := distance[current]
+
+	for current != indexSrc {
+		path = append([]string{vertices[current]}, path...)
+		current = indexOf(previous[current], vertices)
+	}
+
+	path = append([]string{vertices[current]}, path...)
+
+	return weight, path
+}

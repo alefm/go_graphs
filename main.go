@@ -94,6 +94,8 @@ func main() {
 	distance, previous := graph.Dijsktra("1")
 	fmt.Println("Dijkstra Distance", distance)
 	fmt.Println("Dijkstra Predecessor", previous)
+	distanceWeight, dijsktraPath := graph.DijsktraPath("1", "4", distance, previous)
+	fmt.Println("Distance de 1 até 4: ", distanceWeight, "Path", dijsktraPath)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
