@@ -68,20 +68,14 @@ func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (graph *Graph) ValidateEdge(edge string) bool {
+func (graph *Graph) ValidateEdge(edge, first_node, second_node string) bool {
 	graph.Errors = make(map[string]string)
 	
 	if graph.GetEdge(edge) != nil {
 		graph.Errors["Edge"] = "Edge already exists!"
 	}
-	
-	return len(graph.Errors) == 0
-}
 
-func (graph *Graph) ValidateEdgeNode(first_node, second_node string) bool {
-	graph.Errors = make(map[string]string)
-	
-	if graph.GetNode(first_none) == nil {
+	if graph.GetNode(first_node) == nil {
 		graph.Errors["FirstNode"] = "This node don't exists."
 	}
 
@@ -94,27 +88,33 @@ func (graph *Graph) ValidateEdgeNode(first_node, second_node string) bool {
 
 func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
 	aresta_name := r.FormValue("aresta_name")
+	node_um := r.FormValue("vertice_um")
+	node_dois := r.FormValue("vertice_dois")
+
+	if graph.ValidateEdge(aresta_name, node_um, node_dois) == false {
+		rnd.HTML(w, http.StatusOK, "home", graph)
+	}
+
 	aresta_weight, err := strconv.ParseFloat(r.FormValue("aresta_weight"), 64)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	node_um := r.FormValue("vertice_um")
-	node_dois := r.FormValue("vertice_dois")
-	
 	first_node := graph.GetNode(node_um)
 	second_node := graph.GetNode(node_dois)
 
-	edge := Edge{aresta_name, *first_node, *second_node , aresta_weight, ""}
+	if first_node != nil && second_node != nil {
+		edge := Edge{aresta_name, *first_node, *second_node , aresta_weight, ""}
 
-	err = graph.AddEdge(edge)
-	if err != nil {
-		fmt.Println(err)
+		err = graph.AddEdge(edge)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		graph.WriteToFile("output.dot")
+		cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+		cmd.Run()
 	}
-
-	graph.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
-	cmd.Run()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
