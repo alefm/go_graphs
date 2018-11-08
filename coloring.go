@@ -1,5 +1,17 @@
 package main
 
+import (
+	"sort"
+)
+
+// NodeDegree structure
+type nodeDegree struct {
+	node     Node
+	colored  bool
+	degree   int
+	sliceIdx int
+}
+
 /* verify if a given Node have any connection with another node in list */
 func (g *Graph) connectionInSlice(node Node, list []Node) bool {
 	connection := false
@@ -12,6 +24,50 @@ func (g *Graph) connectionInSlice(node Node, list []Node) bool {
 	}
 
 	return connection
+}
+
+func isUncolored(list []nodeDegree) int {
+	for i, value := range list {
+		if !value.colored {
+			return i
+		}
+	}
+
+	return -1
+}
+
+// ColoringHeuristic should put colors in all nodes in graph
+func (g *Graph) ColoringHeuristic() {
+	pallete := [...]string{"gold", "green", "hotpink", "orchid", "red", "blue", "tan", "yellow", "magenta", "cyan", "blueviolet", "olivedrab3"}
+	colorIdx := 0
+	neighbors := g.getNeighbors()
+	var degreeSize []nodeDegree
+
+	for i, slice := range neighbors {
+		degreeSize = append(degreeSize, nodeDegree{g.NodeList[i], false, len(slice), i})
+	}
+
+	// Reverse Sort by degree
+	sort.Slice(degreeSize, func(i, j int) bool {
+		return degreeSize[i].degree > degreeSize[j].degree
+	})
+
+	idx := isUncolored(degreeSize)
+	for idx >= 0 {
+		degreeSize[idx].node.SetColor(pallete[colorIdx])
+		degreeSize[idx].colored = true
+		g.NodeList[degreeSize[idx].sliceIdx] = degreeSize[idx].node
+
+		for i := idx + 1; i < len(degreeSize); i++ {
+			if !g.isAdjacent(degreeSize[idx].node, degreeSize[i].node) {
+				degreeSize[i].node.SetColor(pallete[colorIdx])
+				degreeSize[i].colored = true
+				g.NodeList[degreeSize[i].sliceIdx] = degreeSize[i].node
+			}
+		}
+		colorIdx = colorIdx + 1
+		idx = isUncolored(degreeSize)
+	}
 }
 
 // Coloring should put colors in all nodes in graph
