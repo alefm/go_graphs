@@ -165,7 +165,12 @@ func (g *Graph) String() string {
 	buffer.WriteString(s)
 
 	for _, node := range g.NodeList {
-		s = fmt.Sprintf("\t%s [color=%s];\n", node.Name, node.GetColor())
+		if node.Color != "" {
+			s = fmt.Sprintf("\t%s [fillcolor=%s,style=filled];\n", node.Name, node.GetColor())
+		} else {
+			s = fmt.Sprintf("\t%s [color=%s];\n", node.Name, node.GetColor())
+		}
+
 		buffer.WriteString(s)
 	}
 

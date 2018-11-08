@@ -82,6 +82,8 @@ func main() {
 		fmt.Println(err5)
 	}
 
+	graph.Coloring()
+
 	graph.WriteToFile("output.dot")
 	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
 	cmd.Run()
