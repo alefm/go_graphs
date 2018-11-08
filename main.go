@@ -22,6 +22,7 @@ func init() {
 	rnd = renderer.New(opts)
 }
 
+
 // GetGraph - this is a handler to / requisition
 func GetGraph(w http.ResponseWriter, r *http.Request) {
 	rnd.HTML(w, http.StatusOK, "home", nil)
@@ -39,11 +40,23 @@ func (graph *Graph) GetNodeByName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&Node{})
 }
 
-
+func (graph *Graph) ValidateNode(node string) bool {
+	graph.Errors = make(map[string]string)
+	
+	if graph.GetNode(node) != nil {
+		graph.Errors["Node"] = "Node already exists!"
+	}
+	
+	return len(graph.Errors) == 0
+}
 
 func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	node_name := r.FormValue("vertice_name")
 	node_weight := r.FormValue("vertice_weight")
+
+	if graph.ValidateNode(node_name) == false {
+		rnd.HTML(w, http.StatusOK, "home", graph)
+	}
 
 	tmp_node := Node{node_name, node_weight}
 	graph.AddNode(tmp_node)
@@ -53,6 +66,30 @@ func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	cmd.Run()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (graph *Graph) ValidateEdge(edge string) bool {
+	graph.Errors = make(map[string]string)
+	
+	if graph.GetEdge(edge) != nil {
+		graph.Errors["Edge"] = "Edge already exists!"
+	}
+	
+	return len(graph.Errors) == 0
+}
+
+func (graph *Graph) ValidateEdgeNode(first_node, second_node string) bool {
+	graph.Errors = make(map[string]string)
+	
+	if graph.GetNode(first_none) == nil {
+		graph.Errors["FirstNode"] = "This node don't exists."
+	}
+
+	if graph.GetNode(second_node) == nil {
+		graph.Errors["SecondNode"] = "This node don't exists."
+	}
+	
+	return len(graph.Errors) == 0
 }
 
 func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {

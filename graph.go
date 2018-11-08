@@ -16,6 +16,8 @@ type Graph struct {
 
 	//Store all edges in the graph
 	EdgeList []Edge
+
+	Errors  map[string]string
 }
 
 // NewGraph returns a new Graph.
