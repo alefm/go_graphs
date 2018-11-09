@@ -3,8 +3,9 @@ package main
 // Node Structure
 type Node struct {
 	// Unique ID
-	Name  string `json:"name,omitempty"`
-	Color string `json:"color,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Color      string `json:"color,omitempty"`
+	GraphPoint Point  `json:"graph_point,omitempty"`
 }
 
 // GetName - return current node name
