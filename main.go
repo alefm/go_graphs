@@ -83,53 +83,71 @@ func main() {
 	graph.AddNode(nodeS)
 	graph.AddNode(nodeT)
 
-	edge1 := Edge{"a", node2, node1, 4, ""}
-	edge2 := Edge{"b", node1, node3, 2, ""}
-	edge3 := Edge{"c", node3, node4, 2, ""}
-	edge4 := Edge{"d", node4, node2, 1, ""}
-	edge5 := Edge{"e", node2, node3, 3, ""}
+	var edgeList []Edge
 
-	err := graph.AddEdge(edge1)
-	if err != nil {
-		fmt.Println(err)
+	edgeList = append(edgeList, Edge{"", nodeC, nodeG, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeQ, nodeI, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeI, nodeC, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeI, nodeG, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeJ, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeQ, nodeJ, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeC, nodeF, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeJ, nodeP, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeJ, nodeT, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeJ, nodeB, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeB, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeS, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeP, nodeT, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeT, nodeB, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeG, nodeS, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeB, nodeS, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeT, nodeN, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeP, nodeN, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeN, nodeR, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeB, nodeE, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeG, nodeA, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeS, nodeA, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeE, nodeA, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeB, nodeA, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeN, nodeH, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeP, nodeH, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeH, nodeO, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeO, nodeR, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeR, nodeB, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeA, nodeL, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeR, nodeL, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeR, nodeD, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeM, nodeO, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeK, nodeM, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeD, nodeL, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeP, nodeK, 4, ""})
+	edgeList = append(edgeList, Edge{"", nodeM, nodeD, 4, ""})
+
+	for _, edge := range edgeList {
+		err := graph.AddEdge(edge)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
-	err2 := graph.AddEdge(edge2)
-	if err2 != nil {
-		fmt.Println(err2)
-	}
-
-	err3 := graph.AddEdge(edge3)
-	if err3 != nil {
-		fmt.Println(err3)
-	}
-
-	err4 := graph.AddEdge(edge4)
-	if err4 != nil {
-		fmt.Println(err4)
-	}
-
-	err5 := graph.AddEdge(edge5)
-	if err4 != nil {
-		fmt.Println(err5)
-	}
-
-	graph.ColoringHeuristic()
+	// graph.ColoringHeuristic()
+	graph.Coloring()
+	graph.aStar("A")
 
 	graph.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+	cmd := exec.Command("neato", "-n", "-Tpng", "output.dot", "-o", "./static/graph.png")
 	cmd.Run()
 
-	_, predecessor := graph.Floyd()
-	path := graph.FloydPath(predecessor, node1.Name, node4.Name)
+	// _, predecessor := graph.Floyd()
+	// path := graph.FloydPath(predecessor, nodeA.Name, nodeQ.Name)
 
-	fmt.Println("Floyd Shortest Path", path)
+	// fmt.Println("Floyd Shortest Path", path)
 
-	distance, previous := graph.Dijsktra("1")
+	distance, previous := graph.Dijsktra("A")
 	fmt.Println("Dijkstra Distance", distance)
 	fmt.Println("Dijkstra Predecessor", previous)
-	distanceWeight, dijsktraPath := graph.DijsktraPath("1", "4", distance, previous)
-	fmt.Println("Distance de 1 até 4: ", distanceWeight, "Path", dijsktraPath)
+	distanceWeight, dijsktraPath := graph.DijsktraPath("A", "Q", distance, previous)
+	fmt.Println("Distancia de A até Q: ", distanceWeight, "Path", dijsktraPath)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)

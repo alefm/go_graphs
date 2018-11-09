@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -16,7 +17,7 @@ func calculateDistance(source Node, destination Node) float64 {
 	return sumX + sumY
 }
 
-func (g *Graph) aStar(source string, dest string) {
+func (g *Graph) aStar(source string) {
 	sourceNode := *g.GetNode(source)
 	var distanceList []distanceHeuristic
 
@@ -28,5 +29,9 @@ func (g *Graph) aStar(source string, dest string) {
 		} else {
 			distanceList = append(distanceList, distanceHeuristic{sourceNode, node, 0})
 		}
+	}
+
+	for _, distanceH := range distanceList {
+		fmt.Printf("Distance %s -> %s = %.2f\n", distanceH.source.Name, distanceH.destination.Name, distanceH.distance)
 	}
 }
