@@ -130,8 +130,8 @@ func main() {
 		}
 	}
 
-	// graph.ColoringHeuristic()
-	graph.Coloring()
+	graph.ColoringHeuristic()
+	// graph.Coloring()
 	graph.aStar("A")
 
 	graph.WriteToFile("output.dot")

@@ -38,9 +38,10 @@ func isUncolored(list []nodeDegree) int {
 
 // ColoringHeuristic should put colors in all nodes in graph
 func (g *Graph) ColoringHeuristic() {
-	pallete := [...]string{"gold", "green", "hotpink", "orchid", "red", "blue", "tan", "yellow", "magenta", "cyan", "blueviolet", "olivedrab3"}
+	pallete := [...]string{"gold", "green", "hotpink", "tan", "red", "blue", "tan", "yellow", "magenta", "cyan", "blueviolet", "olivedrab3"}
 	colorIdx := 0
 	neighbors := g.getNeighbors()
+	colorMap := make(map[int][]Node)
 	var degreeSize []nodeDegree
 
 	for i, slice := range neighbors {
@@ -58,13 +59,25 @@ func (g *Graph) ColoringHeuristic() {
 		degreeSize[idx].colored = true
 		g.NodeList[degreeSize[idx].sliceIdx] = degreeSize[idx].node
 
+		// Set node in list of color
+		var colorSlice []Node
+
+		// Append node in color list
+		colorSlice = append(colorSlice, degreeSize[idx].node)
+		colorMap[colorIdx] = colorSlice
+
 		for i := idx + 1; i < len(degreeSize); i++ {
-			if !g.isAdjacent(degreeSize[idx].node, degreeSize[i].node) {
+			if !g.connectionInSlice(degreeSize[i].node, colorMap[colorIdx]) && !degreeSize[i].colored {
 				degreeSize[i].node.SetColor(pallete[colorIdx])
 				degreeSize[i].colored = true
 				g.NodeList[degreeSize[i].sliceIdx] = degreeSize[i].node
+
+				// Append node in color list
+				colorSlice = append(colorSlice, degreeSize[i].node)
+				colorMap[colorIdx] = colorSlice
 			}
 		}
+
 		colorIdx = colorIdx + 1
 		idx = isUncolored(degreeSize)
 	}
