@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -31,7 +30,7 @@ func (g *Graph) aStar(source string) {
 		}
 	}
 
-	for _, distanceH := range distanceList {
+	/*for _, distanceH := range distanceList {
 		fmt.Printf("Distance %s -> %s = %.2f\n", distanceH.source.Name, distanceH.destination.Name, distanceH.distance)
-	}
+	}*/
 }

@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // Floyd algorithm
 func (g *Graph) Floyd() ([][]float64, [][]string) {
@@ -18,7 +21,7 @@ func (g *Graph) Floyd() ([][]float64, [][]string) {
 	/* Fill 2D slice */
 	for i := 0; i < len(g.NodeList); i++ {
 		for j := 0; j < len(g.NodeList); j++ {
-			if index := g.ExistEdge(g.NodeList[i].Name, g.NodeList[j].Name); index >= 0 {
+			if index := g.GetEdgeIndex(g.NodeList[i].Name, g.NodeList[j].Name); index >= 0 {
 				shortestPath[i][j] = g.EdgeList[index].weight
 			} else if i == j {
 				shortestPath[i][j] = 0
@@ -45,6 +48,13 @@ func (g *Graph) Floyd() ([][]float64, [][]string) {
 		}
 	}
 
+	for i := 0; i < len(shortestPath); i++ {
+		for j := 0; j < len(shortestPath); j++ {
+			fmt.Printf("%.0f,", shortestPath[i][j])
+		}
+		fmt.Printf("\n")
+	}
+
 	return shortestPath, predecessor
 }
 
@@ -54,7 +64,10 @@ func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) []st
 
 	path = append(path, begin)
 	for begin != end {
-		begin = predecessor[g.ExistNode(begin)][g.ExistNode(end)]
+		fmt.Printf("Existe node %s e %s?\n", begin, end)
+		beginIdx := g.ExistNode(begin)
+		endIdx := g.ExistNode(end)
+		begin = predecessor[beginIdx][endIdx]
 		path = append(path, begin)
 	}
 

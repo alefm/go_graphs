@@ -41,112 +41,79 @@ func main() {
 
 	graph := NewGraph()
 
-	nodeA := Node{"A", "", Point{9.50, 2.31}}
-	nodeB := Node{"B", "", Point{6.07, 4.86}}
-	nodeC := Node{"C", "", Point{8.91, 7.62}}
-	nodeD := Node{"D", "", Point{4.56, 0.19}}
-	nodeE := Node{"E", "", Point{8.21, 4.45}}
-	nodeF := Node{"F", "", Point{6.15, 7.92}}
-	nodeG := Node{"G", "", Point{9.22, 7.38}}
-	nodeH := Node{"H", "", Point{1.76, 4.06}}
-	nodeI := Node{"I", "", Point{9.35, 9.17}}
-	nodeJ := Node{"J", "", Point{4.10, 8.94}}
-	nodeK := Node{"K", "", Point{0.58, 3.53}}
-	nodeL := Node{"L", "", Point{8.13, 0.10}}
-	nodeM := Node{"M", "", Point{1.39, 2.03}}
-	nodeN := Node{"N", "", Point{1.99, 6.04}}
-	nodeO := Node{"O", "", Point{2.72, 1.99}}
-	nodeP := Node{"P", "", Point{0.15, 7.47}}
-	nodeQ := Node{"Q", "", Point{4.45, 9.32}}
-	nodeR := Node{"R", "", Point{4.66, 4.19}}
-	nodeS := Node{"S", "", Point{8.46, 5.25}}
-	nodeT := Node{"T", "", Point{2.03, 6.72}}
+	graph.testTrabalho()
+	// node0 := Node{"0", "", Point{4.10, 8.94}}
+	// node1 := Node{"1", "", Point{9.50, 2.31}}
+	// node2 := Node{"2", "", Point{6.07, 4.86}}
+	// node3 := Node{"3", "", Point{8.91, 7.62}}
+	// node4 := Node{"4", "", Point{4.56, 0.19}}
+	// node5 := Node{"5", "", Point{8.21, 4.45}}
+	// node6 := Node{"6", "", Point{6.15, 7.92}}
+	// node7 := Node{"7", "", Point{9.22, 7.38}}
+	// node8 := Node{"8", "", Point{1.76, 4.06}}
+	// node9 := Node{"9", "", Point{9.35, 9.17}}
 
-	graph.AddNode(nodeA)
-	graph.AddNode(nodeB)
-	graph.AddNode(nodeC)
-	graph.AddNode(nodeD)
-	graph.AddNode(nodeE)
-	graph.AddNode(nodeF)
-	graph.AddNode(nodeG)
-	graph.AddNode(nodeH)
-	graph.AddNode(nodeI)
-	graph.AddNode(nodeJ)
-	graph.AddNode(nodeK)
-	graph.AddNode(nodeL)
-	graph.AddNode(nodeM)
-	graph.AddNode(nodeN)
-	graph.AddNode(nodeO)
-	graph.AddNode(nodeP)
-	graph.AddNode(nodeQ)
-	graph.AddNode(nodeR)
-	graph.AddNode(nodeS)
-	graph.AddNode(nodeT)
+	// graph.AddNode(node0)
+	// graph.AddNode(node1)
+	// graph.AddNode(node2)
+	// graph.AddNode(node3)
+	// graph.AddNode(node4)
+	// graph.AddNode(node5)
+	// graph.AddNode(node6)
+	// graph.AddNode(node7)
+	// graph.AddNode(node8)
+	// graph.AddNode(node9)
 
-	var edgeList []Edge
+	// var edgeList []Edge
 
-	edgeList = append(edgeList, Edge{"", nodeC, nodeG, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeQ, nodeI, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeI, nodeC, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeI, nodeG, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeF, nodeJ, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeQ, nodeJ, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeC, nodeF, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeJ, nodeP, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeJ, nodeT, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeJ, nodeB, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeF, nodeB, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeF, nodeS, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeP, nodeT, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeT, nodeB, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeG, nodeS, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeB, nodeS, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeT, nodeN, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeP, nodeN, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeN, nodeR, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeB, nodeE, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeG, nodeA, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeS, nodeA, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeE, nodeA, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeB, nodeA, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeN, nodeH, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeP, nodeH, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeH, nodeO, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeO, nodeR, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeR, nodeB, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeA, nodeL, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeR, nodeL, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeR, nodeD, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeM, nodeO, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeK, nodeM, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeD, nodeL, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeP, nodeK, 4, ""})
-	edgeList = append(edgeList, Edge{"", nodeM, nodeD, 4, ""})
+	// edgeList = append(edgeList, Edge{"", node4, node8, 6, ""})
+	// edgeList = append(edgeList, Edge{"", node5, node4, 4, ""})
+	// edgeList = append(edgeList, Edge{"", node5, node8, 12, ""})
+	// edgeList = append(edgeList, Edge{"", node8, node9, 13, ""})
+	// edgeList = append(edgeList, Edge{"", node8, node6, 16, ""})
+	// edgeList = append(edgeList, Edge{"", node6, node9, 6, ""})
+	// edgeList = append(edgeList, Edge{"", node3, node5, 6, ""})
+	// edgeList = append(edgeList, Edge{"", node3, node6, 3, ""})
+	// edgeList = append(edgeList, Edge{"", node1, node4, 14, ""})
+	// edgeList = append(edgeList, Edge{"", node1, node3, 11, ""})
+	// edgeList = append(edgeList, Edge{"", node0, node1, 6, ""})
+	// edgeList = append(edgeList, Edge{"", node1, node2, 12, ""})
+	// edgeList = append(edgeList, Edge{"", node0, node2, 10, ""})
+	// edgeList = append(edgeList, Edge{"", node2, node3, 12, ""})
+	// edgeList = append(edgeList, Edge{"", node2, node6, 8, ""})
+	// edgeList = append(edgeList, Edge{"", node2, node7, 16, ""})
+	// edgeList = append(edgeList, Edge{"", node7, node9, 8, ""})
 
-	for _, edge := range edgeList {
-		err := graph.AddEdge(edge)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
+	// for _, edge := range edgeList {
+	// 	err := graph.AddEdge(edge)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 	}
+	// }
 
 	graph.ColoringHeuristic()
 	// graph.Coloring()
-	graph.aStar("A")
 
 	graph.WriteToFile("output.dot")
 	cmd := exec.Command("neato", "-n", "-Tpng", "output.dot", "-o", "./static/graph.png")
 	cmd.Run()
 
-	// _, predecessor := graph.Floyd()
-	// path := graph.FloydPath(predecessor, nodeA.Name, nodeQ.Name)
+	// graph.aStar("A")
+	shortestPath, predecessor := graph.Floyd()
+	for i := 0; i < len(shortestPath); i++ {
+		for j := 0; j < len(shortestPath); j++ {
+			fmt.Printf("%.0f,", shortestPath[i][j])
+		}
+		fmt.Printf("\n")
+	}
+	path := graph.FloydPath(predecessor, "A", "G")
 
-	// fmt.Println("Floyd Shortest Path", path)
+	fmt.Println("Floyd Shortest Path", path)
 
 	distance, previous := graph.Dijsktra("A")
 	fmt.Println("Dijkstra Distance", distance)
 	fmt.Println("Dijkstra Predecessor", previous)
-	distanceWeight, dijsktraPath := graph.DijsktraPath("A", "Q", distance, previous)
+	distanceWeight, dijsktraPath := graph.DijsktraPath("A", "G", distance, previous)
 	fmt.Println("Distancia de A até Q: ", distanceWeight, "Path", dijsktraPath)
 
 	router := mux.NewRouter()
