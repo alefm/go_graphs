@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/thedevsaddam/renderer"
@@ -37,9 +38,106 @@ func (graph *Graph) GetNodeByName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&Node{})
 }
 
-func main() {
+func (graph *Graph) MuxColoring(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
 
-	graph := NewGraph()
+	if params["algorithm"] == "heuristic" {
+		graph.ColoringHeuristic()
+	} else if params["algorithm"] == "greedy" {
+		graph.Coloring()
+	} else {
+		graph.ClearColors()
+	}
+
+	graph.WriteToFile("output.dot")
+	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+	cmd.Run()
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (graph *Graph) ValidateNode(node string) bool {
+	graph.Errors = make(map[string]string)
+
+	if graph.GetNode(node) != nil {
+		graph.Errors["Node"] = "Node " + node + " already exists!"
+	}
+
+	return len(graph.Errors) == 0
+}
+
+func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
+	node_name := r.FormValue("vertice_name")
+	node_weight := r.FormValue("vertice_weight")
+	node_color = "white"
+
+	if graph.ValidateNode(node_name) == false {
+		rnd.HTML(w, http.StatusOK, "home", graph)
+	}
+
+	tmp_node := Node{node_name, node_weight, Point{0, 0}}
+	graph.AddNode(tmp_node)
+
+	graph.WriteToFile("output.dot")
+	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+	cmd.Run()
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (graph *Graph) ValidateEdge(edge, first_node, second_node string) bool {
+	graph.Errors = make(map[string]string)
+
+	if graph.GetEdge(edge) != nil {
+		graph.Errors["Edge"] = "Edge already exists!"
+	}
+
+	if graph.GetNode(first_node) == nil {
+		graph.Errors["FirstNode"] = "This node don't exists."
+	}
+
+	if graph.GetNode(second_node) == nil {
+		graph.Errors["SecondNode"] = "This node don't exists."
+	}
+
+	return len(graph.Errors) == 0
+}
+
+func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
+	aresta_name := r.FormValue("aresta_name")
+	node_um := r.FormValue("vertice_um")
+	node_dois := r.FormValue("vertice_dois")
+
+	if graph.ValidateEdge(aresta_name, node_um, node_dois) == false {
+		rnd.HTML(w, http.StatusOK, "home", graph)
+	}
+
+	aresta_weight, err := strconv.ParseFloat(r.FormValue("aresta_weight"), 64)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	first_node := graph.GetNode(node_um)
+	second_node := graph.GetNode(node_dois)
+
+	if first_node != nil && second_node != nil {
+		edge := Edge{aresta_name, *first_node, *second_node, aresta_weight, ""}
+
+		err = graph.AddEdge(edge)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	graph.WriteToFile("output.dot")
+	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+	cmd.Run()
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func main() {
+	var graph = NewGraph()
 
 	graph.testTrabalho()
 	// node0 := Node{"0", "", Point{4.10, 8.94}}
@@ -91,7 +189,7 @@ func main() {
 	// 	}
 	// }
 
-	graph.ColoringHeuristic()
+	//graph.ColoringHeuristic()
 	// graph.Coloring()
 
 	graph.WriteToFile("output.dot")
@@ -99,26 +197,29 @@ func main() {
 	cmd.Run()
 
 	// graph.aStar("A")
-	shortestPath, predecessor := graph.Floyd()
-	for i := 0; i < len(shortestPath); i++ {
-		for j := 0; j < len(shortestPath); j++ {
-			fmt.Printf("%.0f,", shortestPath[i][j])
-		}
-		fmt.Printf("\n")
-	}
-	path := graph.FloydPath(predecessor, "A", "G")
+	//shortestPath, predecessor := graph.Floyd()
+	//for i := 0; i < len(shortestPath); i++ {
+	//	for j := 0; j < len(shortestPath); j++ {
+	//		fmt.Printf("%.0f,", shortestPath[i][j])
+	//	}
+	//	fmt.Printf("\n")
+	//}
+	//path := graph.FloydPath(predecessor, "A", "G")
 
-	fmt.Println("Floyd Shortest Path", path)
+	//fmt.Println("Floyd Shortest Path", path)
 
-	distance, previous := graph.Dijsktra("A")
-	fmt.Println("Dijkstra Distance", distance)
-	fmt.Println("Dijkstra Predecessor", previous)
-	distanceWeight, dijsktraPath := graph.DijsktraPath("A", "G", distance, previous)
-	fmt.Println("Distancia de A até Q: ", distanceWeight, "Path", dijsktraPath)
+	//distance, previous := graph.Dijsktra("A")
+	//fmt.Println("Dijkstra Distance", distance)
+	//fmt.Println("Dijkstra Predecessor", previous)
+	//distanceWeight, dijsktraPath := graph.DijsktraPath("A", "G", distance, previous)
+	//fmt.Println("Distancia de A até Q: ", distanceWeight, "Path", dijsktraPath)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
+	router.HandleFunc("/graph/nodes/", graph.CreateNode).Methods("POST")
+	router.HandleFunc("/graph/edges/", graph.CreateEdge).Methods("POST")
 	router.HandleFunc("/graph/nodes/{name}", graph.GetNodeByName).Methods("GET")
+	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	http.ListenAndServe(":8000", router)

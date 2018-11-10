@@ -120,3 +120,11 @@ func (g *Graph) Coloring() {
 		}
 	}
 }
+
+// Remove color to each nodes
+func (g *Graph) ClearColors() {
+	for idx, node := range g.NodeList {
+		node.SetColor("")
+		g.NodeList[idx] = node
+	}
+}
