@@ -121,11 +121,11 @@ func (g *Graph) Coloring() {
 	}
 }
 
-func (g *Graph) ColoringFromPath(path []string) {
+func (g *Graph) ColoringFromPath() {
 	g.ClearColors()
 	for idx, node := range g.NodeList {
-		for _, dijsktraNode := range path {
-			if node.Name == dijsktraNode {
+		for _, SearchPathNode := range g.SearchPath {
+			if node.Name == SearchPathNode {
 				node.SetColor("green")
 				g.NodeList[idx] = node
 			}

@@ -40,16 +40,20 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 
 		if algorithm == "Dijkstra" {
 			distance, previous := g.Dijsktra(first_node)
-			distanceWeight, dijsktraPath := g.DijsktraPath(first_node, end_node, distance, previous)
-			fmt.Println(distanceWeight)
-			g.ColoringFromPath(dijsktraPath)
+			g.SearchWeight, g.SearchPath = g.DijsktraPath(first_node, end_node, distance, previous)
+			g.SearchTable1 = distance
+			g.SearchTable2 = previous
+			g.ColoringFromPath()
 			g.GraphvizPNG()
 
+			// call template render, with graph argument passed.
+			rnd.HTML(w, http.StatusOK, "search", g)
 		}
 
 		http.Redirect(w, r, "/graph/search", http.StatusSeeOther)
 
 	} else {
+		g.SearchWeight = 0.0
 		rnd.HTML(w, http.StatusOK, "search", nil)
 	}
 }
