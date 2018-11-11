@@ -37,8 +37,30 @@
                 </div>
               </div>
             </form>
+
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-xl-12">
+            {{ with .SearchWeight }}
+            <p> Custo: {{ . }}</p>
+            {{ end }}
+
+            {{ with .SearchPath }}
+            <p> Caminho: {{ . }} </p>
+            {{ end }}
+
+            {{ with .SearchTable1 }}
+              <p> {{ . }} </p>
+            {{ end }}
+
+            {{ with .SearchTable2 }}
+            <p> Predecessores: {{ . }} </p>
+            {{ end }}
+
+
           </div>
       </div>
+
 
       <div class="row">
         <div class="col-sm-12 col-md-12 col-xl-12">
@@ -54,3 +76,4 @@
   </body>
 </html>
 {{ end }}
+

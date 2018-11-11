@@ -17,6 +17,11 @@ type Graph struct {
 	EdgeList []Edge
 
 	Errors map[string]string
+
+	SearchPath   []string
+	SearchWeight float64
+	SearchTable1 []float64
+	SearchTable2 []string
 }
 
 // NewGraph returns a new Graph.
