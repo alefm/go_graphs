@@ -52,13 +52,28 @@ func isInHeuristicList(list []distanceHeuristic, name string) (bool, int) {
 	return false, -1
 }
 
+func (g *Graph) distanceBetween(source string, end string) float64 {
+	for _, edge := range g.EdgeList {
+		if (edge.begin.Name == source && edge.end.Name == end) ||
+			(edge.begin.Name == end && edge.end.Name == source) {
+			return edge.weight
+		}
+	}
+	return 0
+}
+
 func (g *Graph) aStar(source string, end string) {
 	sourceNode := *g.GetNode(source)
+	endNode := *g.GetNode(end)
 	var distanceList []distanceHeuristic
 	var openList []distanceHeuristic
 	var closedList []Node
 	var cameFrom []string
 	neighbors := g.getNeighbors()
+
+	//gscore -> para cada nodo valor do node inicial até o nodo corrente
+	//fscore -> para cada nodo o custo total do nodo inicial até o final passando pelo nodo corrente
+	//https://en.wikipedia.org/wiki/A*_search_algorithm
 
 	// Generate distance list of source to all points
 	for _, node := range g.NodeList {
@@ -68,6 +83,8 @@ func (g *Graph) aStar(source string, end string) {
 		} else {
 			distSource := distanceHeuristic{sourceNode, node, 0}
 			distanceList = append(distanceList, distSource)
+
+			// Put source node in openList
 			openList = append(openList, distSource)
 		}
 	}
@@ -77,11 +94,17 @@ func (g *Graph) aStar(source string, end string) {
 		q := lowestD.destination
 
 		if q.GetName() == end {
+			cameFrom = append(cameFrom, q.GetName())
 			fmt.Println(cameFrom)
 		}
 
+		// Remove lowest node distance from openList
 		openList = append(openList[:lowestIdx], openList[lowestIdx+1:]...)
+
+		// Put the lowest node distance in closedList
 		closedList = append(closedList, q)
+
+		// Get all neighbors from this node
 		qNeighbors := neighbors[g.ExistNode(q.GetName())]
 
 		for _, n := range qNeighbors {
@@ -89,17 +112,20 @@ func (g *Graph) aStar(source string, end string) {
 				continue // Ignore neighbor in closedList
 			}
 
-			tentativeDistance := distanceList[g.ExistNode(n.GetName())].distance + g.EdgeList[g.GetEdgeIndex(q.GetName(), n.GetName())].weight //lowestD.distance + calculateDistance(q, n)
+			_, tentativeIdx := isInHeuristicList(distanceList, n.GetName())
 
+			// Sum calculated distance with real distance
+			tentativeDistance := distanceList[tentativeIdx].distance + g.distanceBetween(q.GetName(), n.GetName())
+
+			// Discover a new node
 			if present, _ := isInHeuristicList(openList, n.GetName()); !present {
-				_, idx := isInHeuristicList(distanceList, n.GetName())
-				openList = append(openList, distanceList[idx])
-			} else if tentativeDistance >= distanceList[g.ExistNode(n.GetName())].distance {
-				continue
+				openList = append(openList, distanceList[tentativeIdx])
+			} else if tentativeDistance >= distanceList[tentativeIdx].distance {
+				continue // Ignore new distance, the older is shortest
 			}
 
 			cameFrom = append(cameFrom, q.GetName())
-			distanceList[g.ExistNode(n.GetName())].distance = tentativeDistance
+			distanceList[tentativeIdx].distance = tentativeDistance + calculateDistance(n, endNode)
 		}
 	}
 }
