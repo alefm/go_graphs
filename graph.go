@@ -166,14 +166,14 @@ func (g *Graph) String() string {
 	s := fmt.Sprintf("digraph %s {\n", "Teste")
 	buffer.WriteString(s)
 
-	s = fmt.Sprintf("\tgraph [overlap=scale]")
+	s = fmt.Sprintf("\tgraph [overlap=scale]\n")
 	buffer.WriteString(s)
 
 	for _, node := range g.NodeList {
 		if node.Color != "" {
 			s = fmt.Sprintf("\t%s [fillcolor=%s,style=filled,pos=\"%.2f,%.2f!\"];\n", node.Name, node.GetColor(), node.GraphPoint.X, node.GraphPoint.Y)
 		} else {
-			s = fmt.Sprintf("\t%s [color=%s];\n", node.Name, node.GetColor())
+			s = fmt.Sprintf("\t%s [color=%s,pos=\"%.2f,%.2f!\"];\n", node.Name, node.GetColor(), node.GraphPoint.X, node.GraphPoint.Y)
 		}
 
 		buffer.WriteString(s)

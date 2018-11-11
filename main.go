@@ -28,7 +28,7 @@ func GetGraph(w http.ResponseWriter, r *http.Request) {
 
 func (g *Graph) GraphvizPNG() {
 	g.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+	cmd := exec.Command("neato", "-n", "-Tpng", "output.dot", "-o", "./static/graph.png")
 	cmd.Run()
 }
 
