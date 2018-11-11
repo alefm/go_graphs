@@ -120,3 +120,23 @@ func (g *Graph) Coloring() {
 		}
 	}
 }
+
+func (g *Graph) ColoringFromPath(path []string) {
+	g.ClearColors()
+	for idx, node := range g.NodeList {
+		for _, dijsktraNode := range path {
+			if node.Name == dijsktraNode {
+				node.SetColor("green")
+				g.NodeList[idx] = node
+			}
+		}
+	}
+}
+
+// Remove color to each nodes
+func (g *Graph) ClearColors() {
+	for idx, node := range g.NodeList {
+		node.SetColor("")
+		g.NodeList[idx] = node
+	}
+}
