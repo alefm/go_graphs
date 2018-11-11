@@ -97,18 +97,20 @@ func (graph *Graph) ValidateNode(node string) bool {
 }
 
 func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
-	node_name := r.FormValue("vertice_name")
-	node_color := r.FormValue("vertice_color")
+	node_name := r.FormValue("node_name")
+	node_color := r.FormValue("node_color")
+	node_x, x_err := strconv.ParseFloat(r.FormValue("node_x"), 64)
+	node_y, y_err := strconv.ParseFloat(r.FormValue("node_y"), 64)
 
-	if node_color == "" {
-		node_color = "white"
+	if x_err != nil || y_err != nil {
+		fmt.Println(y_err)
 	}
 
 	if graph.ValidateNode(node_name) == false {
 		rnd.HTML(w, http.StatusOK, "home", graph)
 	}
 
-	tmp_node := Node{node_name, node_color, Point{0, 0}}
+	tmp_node := Node{node_name, node_color, Point{node_x, node_y}}
 	graph.AddNode(tmp_node)
 
 	graph.GraphvizPNG()
@@ -135,24 +137,23 @@ func (graph *Graph) ValidateEdge(edge, first_node, second_node string) bool {
 }
 
 func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
-	aresta_name := r.FormValue("aresta_name")
-	node_um := r.FormValue("vertice_um")
-	node_dois := r.FormValue("vertice_dois")
-
-	if graph.ValidateEdge(aresta_name, node_um, node_dois) == false {
-		rnd.HTML(w, http.StatusOK, "home", graph)
-	}
-
-	aresta_weight, err := strconv.ParseFloat(r.FormValue("aresta_weight"), 64)
+	edge_name := r.FormValue("edge_name")
+	edge_weight, err := strconv.ParseFloat(r.FormValue("edge_weight"), 64)
 	if err != nil {
 		fmt.Println(err)
 	}
+	node_one := r.FormValue("node_one")
+	node_two := r.FormValue("node_two")
 
-	first_node := graph.GetNode(node_um)
-	second_node := graph.GetNode(node_dois)
+	if graph.ValidateEdge(edge_name, node_one, node_two) == false {
+		rnd.HTML(w, http.StatusOK, "home", graph)
+	}
+
+	first_node := graph.GetNode(node_one)
+	second_node := graph.GetNode(node_two)
 
 	if first_node != nil && second_node != nil {
-		edge := Edge{aresta_name, *first_node, *second_node, aresta_weight, ""}
+		edge := Edge{edge_name, *first_node, *second_node, edge_weight, ""}
 
 		err = graph.AddEdge(edge)
 		if err != nil {
@@ -243,12 +244,12 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
-	router.HandleFunc("/graph/nodes/", graph.CreateNode).Methods("POST")
-	router.HandleFunc("/graph/edges/", graph.CreateEdge).Methods("POST")
+	router.HandleFunc("/graph/nodes", graph.CreateNode).Methods("POST")
+	router.HandleFunc("/graph/edges", graph.CreateEdge).Methods("POST")
 	router.HandleFunc("/graph/nodes/{name}", graph.GetNodeByName).Methods("GET")
 	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
 	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
-	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("GET")
+	router.HandleFunc("/graph/search/", graph.MuxSearch).Methods("GET")
 	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("POST")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 

@@ -18,61 +18,72 @@
         </div>
 
         <div class="col-sm-12 col-md-2 col-xl-2">
-          <br />
-          <form action="/graph/nodes/" method="POST" >
-            <div class="form-group">
-            {{ with .Errors.Node }}
-	    <p class="error"> <small>{{ . }}</small></p>
-            {{ end }}
-              <label for="VerticeLabel">Vertice Label</label>
-              <input type="text" class="form-control" id="VerticeUm" name="vertice_name" aria-describedby="verticeUmHelp" placeholder="A">
-              <small id="verticeHelp" class="form-text text-muted">será o apelido e chave para recuperar o vertice.</small>
+          <form action="/graph/nodes" method="POST">
+            <div class="form-row">
+              <p>Cadastrar Vertice</p>
             </div>
-            <div class="form-group">
-              <label for="Vertice_color">Vertice Cor</label>
-              <select name="vertice_color" class="form-control">
-                <option selected>white</option>
-                <option>blue</option>
-                <option>red</option>
-                <option>gold</option>
-              </select>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                {{ with .Errors.Node }}
+                <p class="error"> <small>{{ . }}</small></p>
+                {{ end }}
+                <input type="text" name="node_name" class="form-control form-control-sm" placeholder="Vertice">
+              </div>
+              <div class="form-group col-md-6">
+                <select name="node_color" class="form-control form-control-sm">
+                  <option selected>white</option>
+                  <option>blue</option>
+                  <option>red</option>
+                  <option>gold</option>
+                </select>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary">Cadastrar Vertice</button>
-          </form>
-          <br />
-          <form action="/graph/edges/" method="POST">
-            <div class="form-group">
-            {{ with .Errors.Edge }}
-	      <p class="error"> <small>{{ . }}</small></p>
-            {{ end }}
-              <label for="ArestaLabel">Aresta/Arco Label</label>
-              <input type="text" class="form-control" name="aresta_name" id="VerticeUm" aria-describedby="verticeUmHelp" placeholder="A">
-              <small id="verticeHelp" class="form-text text-muted">será o apelido e chave para recuperar o vertice.</small>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="text" name="node_x" class="form-control form-control-sm" placeholder="X">
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" name="node_y" class="form-control form-control-sm" placeholder="Y">
+              </div>
             </div>
-            <div class="form-group">
-              <label for="VerticeWeight">Aresta/Arco Peso</label>
-              <input type="text" class="form-control" name="aresta_weight" id="VerticeWeight" aria-describedby="verticeWeightHelp" placeholder="15">
-              <small id="verticeWeightHelp" class="form-text text-muted">caso o grafo não seja valorado deixe este valor vázio.</small>
+
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary btn-sm">Inserir Vertice</button>
             </div>
-            <div class="form-group">
-            {{ with .Errors.FirstNode }}
-	      <p class="error"> <small>{{ . }}</small></p>
-            {{ end }}
-              <label for="VerticeUm">Vertice</label>
-              <input type="text" class="form-control" name="vertice_um" id="VerticeUm" aria-describedby="verticeUmHelp" placeholder="A">
-              <small id="verticeUmtHelp" class="form-text text-muted">caso o grafo seja orientado este será o vertice <strong>origem</strong></small>
-            </div>
-            <div class="form-group">
-            {{ with .Errors.SecondNode }}
-	      <p class="error"> <small>{{ . }}</small></p>
-            {{ end }}
-              <label for="VerticeDois">Vertice</label>
-              <input type="text" class="form-control" name="vertice_dois" id="VerticeWeight" aria-describedby="verticeDoisHelp" placeholder="B">
-              <small id="verticeDoistHelp" class="form-text text-muted">caso o grafo seja orientado este será o vertice <strong>destino</strong></small>
-            </div>
-            <button type="submit" class="btn btn-primary">Cadastrar Aresta/Arco</button>
           </form>
 
+          <form action="/graph/edges" method="POST">
+            <div class="form-row">
+              <p>Cadastrar Aresta</p>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                {{ with .Errors.Node }}
+                <p class="error"> <small>{{ . }}</small></p>
+                {{ end }}
+                <input type="text" name="edge_name" class="form-control form-control-sm" placeholder="Aresta">
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" name="edge_weight" class="form-control form-control-sm" placeholder="Peso">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="text" name="node_one" class="form-control form-control-sm" placeholder="Vertice">
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" name="node_two" class="form-control form-control-sm" placeholder="Vertice">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary btn-sm">Inserir Aresta</button>
+            </div>
+          </form>
         </div>
       </div>
     </div><!-- /.container -->
