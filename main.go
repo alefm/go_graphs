@@ -26,6 +26,34 @@ func GetGraph(w http.ResponseWriter, r *http.Request) {
 	rnd.HTML(w, http.StatusOK, "home", nil)
 }
 
+func (g *Graph) GraphvizPNG() {
+	g.WriteToFile("output.dot")
+	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
+	cmd.Run()
+}
+
+func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		algorithm := r.FormValue("algorithm")
+		first_node := r.FormValue("first_node")
+		end_node := r.FormValue("end_node")
+
+		if algorithm == "Dijkstra" {
+			distance, previous := g.Dijsktra(first_node)
+			distanceWeight, dijsktraPath := g.DijsktraPath(first_node, end_node, distance, previous)
+			fmt.Println(distanceWeight)
+			g.ColoringFromPath(dijsktraPath)
+			g.GraphvizPNG()
+
+		}
+
+		http.Redirect(w, r, "/graph/search", http.StatusSeeOther)
+
+	} else {
+		rnd.HTML(w, http.StatusOK, "search", nil)
+	}
+}
+
 // GetNodeByName - this is a handler to /nodes/{name} requisition
 func (graph *Graph) GetNodeByName(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -49,9 +77,7 @@ func (graph *Graph) MuxColoring(w http.ResponseWriter, r *http.Request) {
 		graph.ClearColors()
 	}
 
-	graph.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
-	cmd.Run()
+	graph.GraphvizPNG()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -68,19 +94,20 @@ func (graph *Graph) ValidateNode(node string) bool {
 
 func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	node_name := r.FormValue("vertice_name")
-	node_weight := r.FormValue("vertice_weight")
-	node_color = "white"
+	node_color := r.FormValue("vertice_color")
+
+	if node_color == "" {
+		node_color = "white"
+	}
 
 	if graph.ValidateNode(node_name) == false {
 		rnd.HTML(w, http.StatusOK, "home", graph)
 	}
 
-	tmp_node := Node{node_name, node_weight, Point{0, 0}}
+	tmp_node := Node{node_name, node_color, Point{0, 0}}
 	graph.AddNode(tmp_node)
 
-	graph.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
-	cmd.Run()
+	graph.GraphvizPNG()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -129,9 +156,7 @@ func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	graph.WriteToFile("output.dot")
-	cmd := exec.Command("dot", "-Tpng", "output.dot", "-o", "./static/graph.png")
-	cmd.Run()
+	graph.GraphvizPNG()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -192,9 +217,7 @@ func main() {
 	//graph.ColoringHeuristic()
 	// graph.Coloring()
 
-	graph.WriteToFile("output.dot")
-	cmd := exec.Command("neato", "-n", "-Tpng", "output.dot", "-o", "./static/graph.png")
-	cmd.Run()
+	graph.GraphvizPNG()
 
 	// graph.aStar("A")
 	//shortestPath, predecessor := graph.Floyd()
@@ -220,6 +243,9 @@ func main() {
 	router.HandleFunc("/graph/edges/", graph.CreateEdge).Methods("POST")
 	router.HandleFunc("/graph/nodes/{name}", graph.GetNodeByName).Methods("GET")
 	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
+	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
+	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("GET")
+	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("POST")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	http.ListenAndServe(":8000", router)
