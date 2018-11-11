@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -18,11 +17,17 @@ func (g *Graph) Floyd() ([][]float64, [][]string) {
 		predecessor[index] = make([]string, numberVertices)
 	}
 
+	/* Fill 2D slice predecessor */
+	for _, value := range g.EdgeList {
+		predecessor[g.ExistNode(value.begin.Name)][g.ExistNode(value.end.Name)] = value.end.Name
+	}
+
 	/* Fill 2D slice */
 	for i := 0; i < len(g.NodeList); i++ {
 		for j := 0; j < len(g.NodeList); j++ {
 			if index := g.GetEdgeIndex(g.NodeList[i].Name, g.NodeList[j].Name); index >= 0 {
 				shortestPath[i][j] = g.EdgeList[index].weight
+				predecessor[i][j] = g.NodeList[j].GetName()
 			} else if i == j {
 				shortestPath[i][j] = 0
 			} else {
@@ -31,28 +36,17 @@ func (g *Graph) Floyd() ([][]float64, [][]string) {
 		}
 	}
 
-	/* Fill 2D slice predecessor */
-	for _, value := range g.EdgeList {
-		predecessor[g.ExistNode(value.begin.Name)][g.ExistNode(value.end.Name)] = value.end.Name
-	}
-
 	for k := 0; k < len(shortestPath); k++ {
 		for i := 0; i < len(shortestPath); i++ {
 			for j := 0; j < len(shortestPath); j++ {
-
-				if shortestPath[i][j] > (shortestPath[i][k] + shortestPath[k][j]) {
-					shortestPath[i][j] = shortestPath[i][k] + shortestPath[k][j]
-					predecessor[i][j] = predecessor[i][k]
+				if shortestPath[i][k] < math.Inf(0) && shortestPath[k][j] < math.Inf(0) {
+					if shortestPath[i][j] > (shortestPath[i][k] + shortestPath[k][j]) {
+						shortestPath[i][j] = shortestPath[i][k] + shortestPath[k][j]
+						predecessor[i][j] = predecessor[i][k]
+					}
 				}
 			}
 		}
-	}
-
-	for i := 0; i < len(shortestPath); i++ {
-		for j := 0; j < len(shortestPath); j++ {
-			fmt.Printf("%.0f,", shortestPath[i][j])
-		}
-		fmt.Printf("\n")
 	}
 
 	return shortestPath, predecessor
@@ -64,7 +58,6 @@ func (g *Graph) FloydPath(predecessor [][]string, begin string, end string) []st
 
 	path = append(path, begin)
 	for begin != end {
-		fmt.Printf("Existe node %s e %s?\n", begin, end)
 		beginIdx := g.ExistNode(begin)
 		endIdx := g.ExistNode(end)
 		begin = predecessor[beginIdx][endIdx]
