@@ -38,6 +38,13 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 		first_node := r.FormValue("first_node")
 		end_node := r.FormValue("end_node")
 
+		g.SearchPath = make([]string,0)
+		g.SearchWeight = 0.0
+		g.SearchTable1 = make([]float64, 0)
+		g.SearchTable2 = make([]string, 0)
+		g.SearchTable3 = make([][]float64,0)
+		g.SearchTable4 = make([][]string,0)
+
 		if algorithm == "Dijkstra" {
 			distance, previous := g.Dijsktra(first_node)
 			g.SearchWeight, g.SearchPath = g.DijsktraPath(first_node, end_node, distance, previous)
@@ -45,6 +52,33 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 			g.SearchTable2 = previous
 			g.ColoringFromPath()
 			g.GraphvizPNG()
+
+			// call template render, with graph argument passed.
+			rnd.HTML(w, http.StatusOK, "search", g)
+		} else if algorithm == "Floyd" {
+
+	//shortestPath, predecessor := graph.Floyd()
+	//for i := 0; i < len(shortestPath); i++ {
+	//	for j := 0; j < len(shortestPath); j++ {
+	//		fmt.Printf("%.0f,", shortestPath[i][j])
+	//	}
+	//	fmt.Printf("\n")
+	//}
+	//path := graph.FloydPath(predecessor, "A", "G")
+
+			distance, previous := g.Dijsktra(first_node)
+			g.SearchWeight, g.SearchPath = g.DijsktraPath(first_node, end_node, distance, previous)
+			g.SearchTable1 = distance
+			g.SearchTable2 = previous
+			g.ColoringFromPath()
+			g.GraphvizPNG()
+
+			// call template render, with graph argument passed.
+			rnd.HTML(w, http.StatusOK, "search", g)
+		} else if algorithm == "A*" {
+			//g.SearchPath = g.aStar(first_node, end_node)
+			//g.ColoringFromPath()
+			//g.GraphvizPNG()
 
 			// call template render, with graph argument passed.
 			rnd.HTML(w, http.StatusOK, "search", g)
@@ -261,7 +295,7 @@ func main() {
 	router.HandleFunc("/graph/nodes/{name}", graph.GetNodeByName).Methods("GET")
 	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
 	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
-	router.HandleFunc("/graph/search/", graph.MuxSearch).Methods("GET")
+	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("GET")
 	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("POST")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 

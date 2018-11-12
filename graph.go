@@ -22,6 +22,8 @@ type Graph struct {
 	SearchWeight float64
 	SearchTable1 []float64
 	SearchTable2 []string
+	SearchTable3 [][]float64
+	SearchTable4 [][]string
 }
 
 // NewGraph returns a new Graph.
