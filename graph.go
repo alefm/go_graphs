@@ -180,7 +180,7 @@ func (g *Graph) String() string {
 		if node.Color != "" {
 			s = fmt.Sprintf("\t%s [fillcolor=%s,style=filled,pos=\"%.2f,%.2f!\"];\n", node.Name, node.GetColor(), node.GraphPoint.X/100, node.GraphPoint.Y/100)
 		} else {
-			s = fmt.Sprintf("\t%s [color=%s,pos=\"%.2f,%.2f!\"];\n", node.Name, node.GetColor(), node.GraphPoint.X, node.GraphPoint.Y)
+			s = fmt.Sprintf("\t%s [color=%s,pos=\"%.2f,%.2f!\"];\n", node.Name, node.GetColor(), node.GraphPoint.X/100, node.GraphPoint.Y/100)
 		}
 
 		buffer.WriteString(s)
