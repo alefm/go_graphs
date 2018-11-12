@@ -3,26 +3,26 @@ package main
 import "fmt"
 
 func (graph *Graph) testTrabalho() {
-	nodeA := Node{"A", "", Point{9.50, 2.31}}
-	nodeB := Node{"B", "", Point{6.07, 4.86}}
-	nodeC := Node{"C", "", Point{8.91, 7.62}}
-	nodeD := Node{"D", "", Point{4.56, 0.19}}
-	nodeE := Node{"E", "", Point{8.21, 4.45}}
-	nodeF := Node{"F", "", Point{6.15, 7.92}}
-	nodeG := Node{"G", "", Point{9.22, 7.38}}
-	nodeH := Node{"H", "", Point{1.76, 4.06}}
-	nodeI := Node{"I", "", Point{9.35, 9.17}}
-	nodeJ := Node{"J", "", Point{4.10, 8.94}}
-	nodeK := Node{"K", "", Point{0.58, 3.53}}
-	nodeL := Node{"L", "", Point{8.13, 0.10}}
-	nodeM := Node{"M", "", Point{1.39, 2.03}}
-	nodeN := Node{"N", "", Point{1.99, 6.04}}
-	nodeO := Node{"O", "", Point{2.72, 1.99}}
-	nodeP := Node{"P", "", Point{0.15, 7.47}}
-	nodeQ := Node{"Q", "", Point{4.45, 9.32}}
-	nodeR := Node{"R", "", Point{4.66, 4.19}}
-	nodeS := Node{"S", "", Point{8.46, 5.25}}
-	nodeT := Node{"T", "", Point{2.03, 6.72}}
+	nodeA := Node{"A", "", Point{950, 231}}
+	nodeB := Node{"B", "", Point{607, 486}}
+	nodeC := Node{"C", "", Point{891, 762}}
+	nodeD := Node{"D", "", Point{456, 19}}
+	nodeE := Node{"E", "", Point{821, 445}}
+	nodeF := Node{"F", "", Point{615, 792}}
+	nodeG := Node{"G", "", Point{922, 738}}
+	nodeH := Node{"H", "", Point{176, 406}}
+	nodeI := Node{"I", "", Point{935, 917}}
+	nodeJ := Node{"J", "", Point{410, 894}}
+	nodeK := Node{"K", "", Point{58, 353}}
+	nodeL := Node{"L", "", Point{813, 010}}
+	nodeM := Node{"M", "", Point{139, 203}}
+	nodeN := Node{"N", "", Point{199, 604}}
+	nodeO := Node{"O", "", Point{272, 199}}
+	nodeP := Node{"P", "", Point{015, 747}}
+	nodeQ := Node{"Q", "", Point{445, 932}}
+	nodeR := Node{"R", "", Point{466, 419}}
+	nodeS := Node{"S", "", Point{846, 525}}
+	nodeT := Node{"T", "", Point{203, 672}}
 
 	graph.AddNode(nodeA)
 	graph.AddNode(nodeB)

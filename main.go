@@ -235,7 +235,8 @@ func main() {
 
 	graph.GraphvizPNG()
 
-	graph.aStar("A", "P")
+	aStarPath, aStarDist := graph.aStar("A", "Q")
+	fmt.Println("PATH A*", aStarPath, "Distance", aStarDist)
 	//shortestPath, predecessor := graph.Floyd()
 	//for i := 0; i < len(shortestPath); i++ {
 	//	for j := 0; j < len(shortestPath); j++ {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -79,7 +78,7 @@ func reconstructPath(cameFrom map[string]string, current string) []string {
 	return totalPath
 }
 
-func (g *Graph) aStar(source string, end string) {
+func (g *Graph) aStar(source string, end string) ([]string, float64) {
 	sourceNode := *g.GetNode(source)
 	endNode := *g.GetNode(end)
 	// distance between source until node
@@ -90,12 +89,9 @@ func (g *Graph) aStar(source string, end string) {
 	var distanceList []distanceHeuristic
 	var openList []distanceHeuristic
 	var closedList []Node
+
 	cameFrom := make(map[string]string)
 	neighbors := g.getNeighbors()
-
-	//gscore -> para cada nodo valor do node inicial até o nodo corrente
-	//fscore -> para cada nodo o custo total do nodo inicial até o final passando pelo nodo corrente
-	//https://en.wikipedia.org/wiki/A*_search_algorithm
 
 	// Generate distance list of source to all points
 	for _, node := range g.NodeList {
@@ -127,11 +123,7 @@ func (g *Graph) aStar(source string, end string) {
 		q := lowestD.destination
 
 		if q.GetName() == end {
-			// cameFrom = append(cameFrom, q.GetName())
-			// cameFrom[q.GetName()] = append(cameFrom[q.GetName()], q.GetName())
-			// cameFrom[q.GetName()] = q.GetName()
-			fmt.Println(reconstructPath(cameFrom, q.GetName()))
-			fmt.Println("Teste")
+			return reconstructPath(cameFrom, q.GetName()), gScore[endNode.GetName()].distance
 		}
 
 		// Remove lowest node distance from openList
@@ -151,7 +143,6 @@ func (g *Graph) aStar(source string, end string) {
 			_, tentativeIdx := isInHeuristicList(distanceList, n.GetName())
 
 			// Sum calculated distance with real distance
-			// tentativeDistance := distanceList[tentativeIdx].distance + g.distanceBetween(q.GetName(), n.GetName())
 			tentativeDistance := gScore[q.GetName()].distance + calculateDistance(q, n)
 
 			// Discover a new node
@@ -161,10 +152,7 @@ func (g *Graph) aStar(source string, end string) {
 				continue // Ignore new distance, the older is shortest
 			}
 
-			// cameFrom = append(cameFrom, q.GetName())
-			// cameFrom[n.GetName()] = append(cameFrom[n.GetName()], q.GetName())
 			cameFrom[n.GetName()] = q.GetName()
-			// distanceList[tentativeIdx].distance = tentativeDistance + calculateDistance(n, endNode)
 			aux := gScore[n.GetName()]
 			aux.distance = tentativeDistance
 
@@ -172,4 +160,6 @@ func (g *Graph) aStar(source string, end string) {
 			fScore[n.GetName()] = gScore[n.GetName()].distance + calculateDistance(n, endNode)
 		}
 	}
+
+	return make([]string, 0), 0.0
 }
