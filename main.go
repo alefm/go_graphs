@@ -223,7 +223,7 @@ func main() {
 
 	graph.GraphvizPNG()
 
-	graph.aStar("A", "Q")
+	graph.aStar("A", "P")
 	//shortestPath, predecessor := graph.Floyd()
 	//for i := 0; i < len(shortestPath); i++ {
 	//	for j := 0; j < len(shortestPath); j++ {
