@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -52,23 +51,70 @@ func isInHeuristicList(list []distanceHeuristic, name string) (bool, int) {
 	return false, -1
 }
 
-func (g *Graph) aStar(source string, end string) {
+func (g *Graph) distanceBetween(source string, end string) float64 {
+	for _, edge := range g.EdgeList {
+		if (edge.begin.Name == source && edge.end.Name == end) ||
+			(edge.begin.Name == end && edge.end.Name == source) {
+			return edge.weight
+		}
+	}
+	return 0
+}
+
+func reconstructPath(cameFrom map[string]string, current string) []string {
+	var totalPath []string
+	_, ok := cameFrom[current]
+	currentAux := cameFrom[current]
+
+	totalPath = append([]string{current}, totalPath...)
+	totalPath = append([]string{currentAux}, totalPath...)
+
+	for ok {
+		currentAux = cameFrom[currentAux]
+		totalPath = append([]string{currentAux}, totalPath...)
+		_, ok = cameFrom[currentAux]
+	}
+
+	return totalPath
+}
+
+func (g *Graph) aStar(source string, end string) ([]string, float64) {
 	sourceNode := *g.GetNode(source)
+	endNode := *g.GetNode(end)
+	// distance between source until node
+	gScore := make(map[string]distanceHeuristic)
+	// distance between source to end passing by node
+	fScore := make(map[string]float64)
+
 	var distanceList []distanceHeuristic
 	var openList []distanceHeuristic
 	var closedList []Node
-	var cameFrom []string
+
+	cameFrom := make(map[string]string)
 	neighbors := g.getNeighbors()
 
 	// Generate distance list of source to all points
 	for _, node := range g.NodeList {
 		if sourceNode.GetName() != node.GetName() {
 			distance := calculateDistance(sourceNode, node)
-			distanceList = append(distanceList, distanceHeuristic{sourceNode, node, distance})
+
+			distanceToEnd := calculateDistance(node, endNode)
+			distanceToEnd = distanceToEnd + distance
+
+			distanceH := distanceHeuristic{sourceNode, node, distance}
+			gScore[node.GetName()] = distanceH
+			fScore[node.GetName()] = distanceToEnd
+
+			distanceList = append(distanceList, distanceH)
 		} else {
 			distSource := distanceHeuristic{sourceNode, node, 0}
-			distanceList = append(distanceList, distSource)
+			gScore[node.GetName()] = distSource
+			fScore[node.GetName()] = calculateDistance(sourceNode, endNode)
+
+			// Put source node in openList
 			openList = append(openList, distSource)
+
+			distanceList = append(distanceList, distSource)
 		}
 	}
 
@@ -77,11 +123,16 @@ func (g *Graph) aStar(source string, end string) {
 		q := lowestD.destination
 
 		if q.GetName() == end {
-			fmt.Println(cameFrom)
+			return reconstructPath(cameFrom, q.GetName()), gScore[endNode.GetName()].distance
 		}
 
+		// Remove lowest node distance from openList
 		openList = append(openList[:lowestIdx], openList[lowestIdx+1:]...)
+
+		// Put the lowest node distance in closedList
 		closedList = append(closedList, q)
+
+		// Get all neighbors from this node
 		qNeighbors := neighbors[g.ExistNode(q.GetName())]
 
 		for _, n := range qNeighbors {
@@ -89,17 +140,26 @@ func (g *Graph) aStar(source string, end string) {
 				continue // Ignore neighbor in closedList
 			}
 
-			tentativeDistance := distanceList[g.ExistNode(n.GetName())].distance + g.EdgeList[g.GetEdgeIndex(q.GetName(), n.GetName())].weight //lowestD.distance + calculateDistance(q, n)
+			_, tentativeIdx := isInHeuristicList(distanceList, n.GetName())
 
+			// Sum calculated distance with real distance
+			tentativeDistance := gScore[q.GetName()].distance + calculateDistance(q, n)
+
+			// Discover a new node
 			if present, _ := isInHeuristicList(openList, n.GetName()); !present {
-				_, idx := isInHeuristicList(distanceList, n.GetName())
-				openList = append(openList, distanceList[idx])
-			} else if tentativeDistance >= distanceList[g.ExistNode(n.GetName())].distance {
-				continue
+				openList = append(openList, distanceList[tentativeIdx])
+			} else if tentativeDistance >= gScore[n.GetName()].distance {
+				continue // Ignore new distance, the older is shortest
 			}
 
-			cameFrom = append(cameFrom, q.GetName())
-			distanceList[g.ExistNode(n.GetName())].distance = tentativeDistance
+			cameFrom[n.GetName()] = q.GetName()
+			aux := gScore[n.GetName()]
+			aux.distance = tentativeDistance
+
+			gScore[n.GetName()] = aux
+			fScore[n.GetName()] = gScore[n.GetName()].distance + calculateDistance(n, endNode)
 		}
 	}
+
+	return make([]string, 0), 0.0
 }
