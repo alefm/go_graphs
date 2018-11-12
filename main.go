@@ -86,11 +86,19 @@ func (graph *Graph) MuxColoring(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (graph *Graph) ValidateNode(node string) bool {
+func (graph *Graph) ValidateNode(node string, x, y float64) bool {
 	graph.Errors = make(map[string]string)
 
 	if graph.GetNode(node) != nil {
 		graph.Errors["Node"] = "Node " + node + " already exists!"
+	}
+
+	if x < 0.0 || x > 1000.0 {
+		graph.Errors["X"] = "X: 0~1000"
+	}
+
+	if y < 0.0 || y > 1000.0 {
+		graph.Errors["Y"] = "Y: 0~1000"
 	}
 
 	return len(graph.Errors) == 0
@@ -102,13 +110,16 @@ func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	node_x, x_err := strconv.ParseFloat(r.FormValue("node_x"), 64)
 	node_y, y_err := strconv.ParseFloat(r.FormValue("node_y"), 64)
 
+	node_x /= 100
+	node_y /= 100
+
 	if x_err != nil || y_err != nil {
 		fmt.Println(y_err)
 	}
 
-	if graph.ValidateNode(node_name) == false {
-		rnd.HTML(w, http.StatusOK, "home", graph)
-	}
+	//if graph.ValidateNode(node_name, node_x, node_y) == false {
+	//	rnd.HTML(w, http.StatusOK, "home", graph)
+	//}
 
 	tmp_node := Node{node_name, node_color, Point{node_x, node_y}}
 	graph.AddNode(tmp_node)
