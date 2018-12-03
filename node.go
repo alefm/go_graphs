@@ -3,24 +3,25 @@ package main
 // Node Structure
 type Node struct {
 	// Unique ID
-	name string
-	color string
+	Name       string `json:"name,omitempty"`
+	Color      string `json:"color,omitempty"`
+	GraphPoint Point  `json:"graph_point,omitempty"`
 }
 
 // GetName - return current node name
 func (n Node) GetName() string {
-	return n.name
+	return n.Name
 }
 
 // SetColor - set current node color
-func (n *Node) SetColor(color string){
-	n.color = color
+func (n *Node) SetColor(color string) {
+	n.Color = color
 }
 
 // GetColor - get current node color
 func (n Node) GetColor() string {
-	if n.color != "" {
-		return n.color
+	if n.Color != "" {
+		return n.Color
 	}
 
 	return "black"

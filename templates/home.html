@@ -1,0 +1,100 @@
+{{ define "home" }}
+
+<!DOCTYPE html>
+<html lang="pt_BR">
+  {{ template "header" }}
+
+  <body>
+    <style type="text/css">.error {color: red;}</style>
+
+    {{ template "navbar" }}
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 col-md-10 col-xl-10">
+          <h1>Grafo</h1>
+          <img class="img-fluid" src="/graph.png" alt="Imagem png do grafo gerado pelo go_graph">
+          <p>Grafo gerado a partir do go_graph.</p>
+        </div>
+
+        <div class="col-sm-12 col-md-2 col-xl-2">
+          <form action="/graph/nodes" method="POST">
+            <div class="form-row">
+              <p>Cadastrar Vertice</p>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                {{ with .Errors.Node }}
+                <p class="error"> <small>{{ . }}</small></p>
+                {{ end }}
+                <input type="text" name="node_name" class="form-control form-control-sm" placeholder="Vertice">
+              </div>
+              <div class="form-group col-md-6">
+                <select name="node_color" class="form-control form-control-sm">
+                  <option selected>white</option>
+                  <option>blue</option>
+                  <option>red</option>
+                  <option>gold</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                {{ with .Errors.X }}
+                <p class="error"> <small>{{ . }}</small></p>
+                {{ end }}
+                <input type="number" min="0" max="1000" name="node_x" class="form-control form-control-sm" placeholder="X">
+              </div>
+              <div class="form-group col-md-6">
+                {{ with .Errors.Y }}
+                <p class="error"> <small>{{ . }}</small></p>
+                {{ end }}
+                <input type="number" min="0" max="1000" name="node_y" class="form-control form-control-sm" placeholder="Y">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary btn-sm">Inserir Vertice</button>
+            </div>
+          </form>
+
+          <form action="/graph/edges" method="POST">
+            <div class="form-row">
+              <p>Cadastrar Aresta</p>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                {{ with .Errors.Node }}
+                <p class="error"> <small>{{ . }}</small></p>
+                {{ end }}
+                <input type="text" name="edge_name" class="form-control form-control-sm" placeholder="Aresta">
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" name="edge_weight" class="form-control form-control-sm" placeholder="Peso">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="text" name="node_one" class="form-control form-control-sm" placeholder="Vertice">
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" name="node_two" class="form-control form-control-sm" placeholder="Vertice">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary btn-sm">Inserir Aresta</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div><!-- /.container -->
+
+    {{ template "footer" }}
+  </body>
+</html>
+{{ end }}

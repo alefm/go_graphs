@@ -1,6 +1,6 @@
 .DS_Store
 .idea/*
-output.dot
+*.dot
+*.png
 go_graphs
-sample.png
 gopath/*
