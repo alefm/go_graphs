@@ -38,12 +38,12 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 		first_node := r.FormValue("first_node")
 		end_node := r.FormValue("end_node")
 
-		g.SearchPath = make([]string,0)
+		g.SearchPath = nil
 		g.SearchWeight = 0.0
-		g.SearchTable1 = make([]float64, 0)
-		g.SearchTable2 = make([]string, 0)
-		g.SearchTable3 = make([][]float64,0)
-		g.SearchTable4 = make([][]string,0)
+		g.SearchTable1 = nil
+		g.SearchTable2 = nil
+		g.SearchTable3 = nil
+		g.SearchTable4 = nil
 
 		if algorithm == "Dijkstra" {
 			distance, previous := g.Dijsktra(first_node)
@@ -57,28 +57,42 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 			rnd.HTML(w, http.StatusOK, "search", g)
 		} else if algorithm == "Floyd" {
 
-	//shortestPath, predecessor := graph.Floyd()
-	//for i := 0; i < len(shortestPath); i++ {
-	//	for j := 0; j < len(shortestPath); j++ {
-	//		fmt.Printf("%.0f,", shortestPath[i][j])
-	//	}
-	//	fmt.Printf("\n")
-	//}
-	//path := graph.FloydPath(predecessor, "A", "G")
+			g.SearchTable3, g.SearchTable4 = g.Floyd()
+			g.SearchPath = g.FloydPath(g.SearchTable4, first_node, end_node)
 
-			distance, previous := g.Dijsktra(first_node)
-			g.SearchWeight, g.SearchPath = g.DijsktraPath(first_node, end_node, distance, previous)
-			g.SearchTable1 = distance
-			g.SearchTable2 = previous
+			fmt.Println("**************************** FLOYD ****************************")
+			fmt.Println("Distance Matrix:")
+
+			for _, line := range g.SearchTable3 {
+				for _, distance := range line {
+					fmt.Printf("%.0f, ", distance)
+				}
+				fmt.Printf("\n")
+			}
+
+			fmt.Println("Predecessor Matrix:")
+			for _, line := range g.SearchTable4 {
+				for _, predecessor := range line {
+					if predecessor == "" {
+						fmt.Printf("-, ")
+					} else {
+						fmt.Printf("%s, ", predecessor)
+					}
+				}
+				fmt.Printf("\n")
+			}
+
+			fmt.Println("***************************************************************")
 			g.ColoringFromPath()
 			g.GraphvizPNG()
 
 			// call template render, with graph argument passed.
 			rnd.HTML(w, http.StatusOK, "search", g)
 		} else if algorithm == "A*" {
-			//g.SearchPath = g.aStar(first_node, end_node)
-			//g.ColoringFromPath()
-			//g.GraphvizPNG()
+
+			g.SearchPath, g.SearchWeight = g.aStar(first_node, end_node)
+			g.ColoringFromPath()
+			g.GraphvizPNG()
 
 			// call template render, with graph argument passed.
 			rnd.HTML(w, http.StatusOK, "search", g)
@@ -144,16 +158,9 @@ func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	node_x, x_err := strconv.ParseFloat(r.FormValue("node_x"), 64)
 	node_y, y_err := strconv.ParseFloat(r.FormValue("node_y"), 64)
 
-	node_x /= 100
-	node_y /= 100
-
 	if x_err != nil || y_err != nil {
 		fmt.Println(y_err)
 	}
-
-	//if graph.ValidateNode(node_name, node_x, node_y) == false {
-	//	rnd.HTML(w, http.StatusOK, "home", graph)
-	//}
 
 	tmp_node := Node{node_name, node_color, Point{node_x, node_y}}
 	graph.AddNode(tmp_node)
@@ -264,29 +271,7 @@ func main() {
 		}
 	}*/
 
-	//graph.ColoringHeuristic()
-	// graph.Coloring()
-
 	graph.GraphvizPNG()
-
-	aStarPath, aStarDist := graph.aStar("A", "Q")
-	fmt.Println("PATH A*", aStarPath, "Distance", aStarDist)
-	//shortestPath, predecessor := graph.Floyd()
-	//for i := 0; i < len(shortestPath); i++ {
-	//	for j := 0; j < len(shortestPath); j++ {
-	//		fmt.Printf("%.0f,", shortestPath[i][j])
-	//	}
-	//	fmt.Printf("\n")
-	//}
-	//path := graph.FloydPath(predecessor, "A", "G")
-
-	//fmt.Println("Floyd Shortest Path", path)
-
-	//distance, previous := graph.Dijsktra("A")
-	//fmt.Println("Dijkstra Distance", distance)
-	//fmt.Println("Dijkstra Predecessor", previous)
-	//distanceWeight, dijsktraPath := graph.DijsktraPath("A", "G", distance, previous)
-	//fmt.Println("Distancia de A até Q: ", distanceWeight, "Path", dijsktraPath)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
