@@ -158,9 +158,6 @@ func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	node_x, x_err := strconv.ParseFloat(r.FormValue("node_x"), 64)
 	node_y, y_err := strconv.ParseFloat(r.FormValue("node_y"), 64)
 
-	node_x /= 100
-	node_y /= 100
-
 	if x_err != nil || y_err != nil {
 		fmt.Println(y_err)
 	}
