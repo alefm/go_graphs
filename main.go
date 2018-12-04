@@ -221,7 +221,7 @@ func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
 func main() {
 	var graph = NewGraph()
 
-	graph.testTrabalho()
+	graph.testTrabalhoM3()
 	/*node0 := Node{"0", "", Point{4.10, 8.94}}
 	node1 := Node{"1", "", Point{9.50, 2.31}}
 	node2 := Node{"2", "", Point{6.07, 4.86}}

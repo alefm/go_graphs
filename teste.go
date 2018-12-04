@@ -92,3 +92,45 @@ func (graph *Graph) testTrabalho() {
 		}
 	}
 }
+
+func (graph *Graph) testTrabalhoM3() {
+	nodeE := Node{"E", "", Point{1257, 633}}
+	nodeF := Node{"F", "", Point{442, 585}}
+	nodeG := Node{"G", "", Point{1892, 865}}
+	nodeH := Node{"H", "", Point{1113, 215}}
+	nodeK := Node{"K", "", Point{871, 860}}
+	nodeL := Node{"L", "", Point{474, 119}}
+	nodeN := Node{"N", "", Point{152, 859}}
+
+	graph.AddNode(nodeE)
+	graph.AddNode(nodeF)
+	graph.AddNode(nodeG)
+	graph.AddNode(nodeH)
+	graph.AddNode(nodeK)
+	graph.AddNode(nodeL)
+	graph.AddNode(nodeN)
+
+	var edgeList []Edge
+
+	edgeList = append(edgeList, Edge{"", nodeN, nodeK, 60, ""})
+	edgeList = append(edgeList, Edge{"", nodeN, nodeF, 47, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeK, 70, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeL, 10, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeH, 30, ""})
+	edgeList = append(edgeList, Edge{"", nodeF, nodeE, 10, ""})
+	edgeList = append(edgeList, Edge{"", nodeK, nodeG, 90, ""})
+	edgeList = append(edgeList, Edge{"", nodeK, nodeE, 10, ""})
+	edgeList = append(edgeList, Edge{"", nodeK, nodeH, 73, ""})
+	edgeList = append(edgeList, Edge{"", nodeL, nodeE, 5, ""})
+	edgeList = append(edgeList, Edge{"", nodeL, nodeH, 40, ""})
+	edgeList = append(edgeList, Edge{"", nodeH, nodeE, 60, ""})
+	edgeList = append(edgeList, Edge{"", nodeH, nodeG, 80, ""})
+	edgeList = append(edgeList, Edge{"", nodeE, nodeG, 40, ""})
+
+	for _, edge := range edgeList {
+		err := graph.AddEdge(edge)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
