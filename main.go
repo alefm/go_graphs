@@ -222,6 +222,7 @@ func main() {
 	var graph = NewGraph()
 
 	graph.testTrabalhoM3()
+	graph.geneticAlgorithm("E", "N")
 	/*node0 := Node{"0", "", Point{4.10, 8.94}}
 	node1 := Node{"1", "", Point{9.50, 2.31}}
 	node2 := Node{"2", "", Point{6.07, 4.86}}

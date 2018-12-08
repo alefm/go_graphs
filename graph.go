@@ -166,6 +166,17 @@ func (g *Graph) WriteToFile(fileName string) {
 	fmt.Fprintf(file, g.String())
 }
 
+// NodeListAsString - Return entire node list as slice string
+func (g *Graph) NodeListAsString() []string {
+	nodeList := make([]string, 0)
+
+	for _, node := range g.NodeList {
+		nodeList = append(nodeList, node.GetName())
+	}
+
+	return nodeList
+}
+
 // Return a graphviz format string of all graph
 func (g *Graph) String() string {
 	var buffer bytes.Buffer
