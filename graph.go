@@ -223,3 +223,13 @@ func (g *Graph) isAdjacent(nodeA Node, nodeB Node) bool {
 
 	return false
 }
+
+func (g *Graph) getMaxWeight() float64 {
+	maxWeight := 0.0
+	for _, edge := range g.EdgeList {
+		if edge.weight > maxWeight {
+			maxWeight = edge.weight
+		}
+	}
+	return maxWeight
+}
