@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"time"
 )
@@ -13,8 +14,13 @@ type Individual struct {
 
 type Population struct {
 	startNode   Node
-	endNode     Node
 	individuals []Individual
+}
+
+func (g *Graph) calculateDistancePythagorean(source Node, destination Node) float64 {
+	x := math.Pow((destination.GraphPoint.X - source.GraphPoint.Y), 2)
+	y := math.Pow((destination.GraphPoint.Y - source.GraphPoint.Y), 2)
+	return math.Sqrt((x + y))
 }
 
 // Perm calls f with each permutation of a.
@@ -45,24 +51,40 @@ func findAndRemove(s []string, r string) []string {
 	return s
 }
 
-func (g *Graph) runGeneticAlgorithm(population Population) {
-	// calculate fitness of all individuals
+func (p *Population) getBestIndividual() Individual {
+	bestIndividual := p.individuals[0]
 
-	// satisfy stop criterion?
-	// then end the algorithm
+	for _, individual := range p.individuals {
+		if individual.fitness > bestIndividual.fitness {
+			bestIndividual = individual
+		}
+	}
+
+	return bestIndividual
+}
+
+func (g *Graph) runGeneticAlgorithm(population Population, stopCriterion int) Individual {
+	// Generate fitness of all individuals
+	for _, ind := range population.individuals {
+		g.calculateFitness(&ind)
+	}
+
+	if stopCriterion == 0 {
+		return population.getBestIndividual()
+	}
 
 	// sort crossover and make it
 
 	// sort mutation and make it
 
-	// runGeneticAlgorithm again
+	return g.runGeneticAlgorithm(population, stopCriterion-1)
 }
 
-func (g *Graph) geneticAlgorithm(startNode string, endNode string) ([]string, float64) {
+func (g *Graph) geneticAlgorithm(startNode string, stopCriterion int, coRatio float64, mutationRatio float64) ([]string, float64) {
 	population := Population{}
 	population.startNode = *g.GetNode(startNode)
-	population.endNode = *g.GetNode(endNode)
 	population.individuals = make([]Individual, 0)
+	rand.Seed(time.Now().Unix())
 
 	nodeList := g.NodeListAsString()
 
@@ -70,9 +92,9 @@ func (g *Graph) geneticAlgorithm(startNode string, endNode string) ([]string, fl
 	nodeList = findAndRemove(nodeList, startNode)
 	population.generatePopulation(nodeList, 100)
 
-	g.runGeneticAlgorithm(population)
-
-	return make([]string, 0), 0.0
+	solution := g.runGeneticAlgorithm(population, stopCriterion)
+	fmt.Println("Solução encontrada", solution.path, "com o fitness", solution.fitness)
+	return solution.path, solution.fitness
 }
 
 func (p *Population) generatePopulation(nodeList []string, nPopulation int) {
@@ -86,25 +108,42 @@ func (p *Population) generatePopulation(nodeList []string, nPopulation int) {
 	})
 	fmt.Println("Quantidade de permutacoes geradas ", len(permutation))
 	fmt.Println("Escolhendo", nPopulation, " delas...")
-	rand.Seed(time.Now().Unix())
 
+	//TODO: alterar para torneio
 	for i := 0; i < nPopulation; i++ {
 		index := rand.Intn(len(permutation))
 		individual := Individual{permutation[index], 0}
 		p.individuals = append(p.individuals, individual)
 	}
 
-	fmt.Println("População inicial gerada!")
+	fmt.Println("População inicial gerada! Com o tamanho: ", len(p.individuals))
 }
 
-func (i *Individual) calculateFitness() {
+func (g *Graph) calculateFitness(i *Individual) {
+	for index := range i.path {
+		var source Node
+		var dest Node
+		if index+1 > len(i.path)-1 {
+			source = *g.GetNode(i.path[index])
+			dest = *g.GetNode(i.path[0])
+		} else {
+			source = *g.GetNode(i.path[index])
+			dest = *g.GetNode(i.path[index+1])
+		}
+		i.fitness = 1 / g.calculateDistancePythagorean(source, dest)
+	}
+	fmt.Println(i.path, " : ", i.fitness)
+}
+
+func (i *Individual) makeCrossOver(second *Individual) {
 
 }
 
-func (i *Individual) makeCrossOver() {
+func (i *Individual) makeMutation() {
+	indexA := rand.Intn(len(i.path))
+	indexB := rand.Intn(len(i.path))
 
-}
-
-func (i *Individual) makeMutation(second *Individual) {
-
+	aux := i.path[indexB]
+	i.path[indexB] = i.path[indexA]
+	i.path[indexA] = aux
 }

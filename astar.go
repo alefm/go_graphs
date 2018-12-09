@@ -10,7 +10,7 @@ type distanceHeuristic struct {
 	distance    float64
 }
 
-func calculateDistance(source Node, destination Node) float64 {
+func (g *Graph) calculateDistance(source Node, destination Node) float64 {
 	sumX := math.Abs(float64(source.GraphPoint.X - destination.GraphPoint.X))
 	sumY := math.Abs(float64(source.GraphPoint.Y - destination.GraphPoint.Y))
 	return sumX + sumY
@@ -96,9 +96,9 @@ func (g *Graph) aStar(source string, end string) ([]string, float64) {
 	// Generate distance list of source to all points
 	for _, node := range g.NodeList {
 		if sourceNode.GetName() != node.GetName() {
-			distance := calculateDistance(sourceNode, node)
+			distance := g.calculateDistance(sourceNode, node)
 
-			distanceToEnd := calculateDistance(node, endNode)
+			distanceToEnd := g.calculateDistance(node, endNode)
 			distanceToEnd = distanceToEnd + distance
 
 			distanceH := distanceHeuristic{sourceNode, node, distance}
@@ -109,7 +109,7 @@ func (g *Graph) aStar(source string, end string) ([]string, float64) {
 		} else {
 			distSource := distanceHeuristic{sourceNode, node, 0}
 			gScore[node.GetName()] = distSource
-			fScore[node.GetName()] = calculateDistance(sourceNode, endNode)
+			fScore[node.GetName()] = g.calculateDistance(sourceNode, endNode)
 
 			// Put source node in openList
 			openList = append(openList, distSource)
@@ -143,7 +143,7 @@ func (g *Graph) aStar(source string, end string) ([]string, float64) {
 			_, tentativeIdx := isInHeuristicList(distanceList, n.GetName())
 
 			// Sum calculated distance with real distance
-			tentativeDistance := gScore[q.GetName()].distance + calculateDistance(q, n)
+			tentativeDistance := gScore[q.GetName()].distance + g.calculateDistance(q, n)
 
 			// Discover a new node
 			if present, _ := isInHeuristicList(openList, n.GetName()); !present {
@@ -157,7 +157,7 @@ func (g *Graph) aStar(source string, end string) ([]string, float64) {
 			aux.distance = tentativeDistance
 
 			gScore[n.GetName()] = aux
-			fScore[n.GetName()] = gScore[n.GetName()].distance + calculateDistance(n, endNode)
+			fScore[n.GetName()] = gScore[n.GetName()].distance + g.calculateDistance(n, endNode)
 		}
 	}
 
