@@ -45,6 +45,19 @@ func findAndRemove(s []string, r string) []string {
 	return s
 }
 
+func (g *Graph) runGeneticAlgorithm(population Population) {
+	// calculate fitness of all individuals
+
+	// satisfy stop criterion?
+	// then end the algorithm
+
+	// sort crossover and make it
+
+	// sort mutation and make it
+
+	// runGeneticAlgorithm again
+}
+
 func (g *Graph) geneticAlgorithm(startNode string, endNode string) ([]string, float64) {
 	population := Population{}
 	population.startNode = *g.GetNode(startNode)
@@ -56,6 +69,8 @@ func (g *Graph) geneticAlgorithm(startNode string, endNode string) ([]string, fl
 	// remove the startNode from the list
 	nodeList = findAndRemove(nodeList, startNode)
 	population.generatePopulation(nodeList, 100)
+
+	g.runGeneticAlgorithm(population)
 
 	return make([]string, 0), 0.0
 }
