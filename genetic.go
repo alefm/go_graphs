@@ -5,17 +5,18 @@ import (
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/bradfitz/slice"
 )
 
 type GeneticFrontendState struct {
-	SolutionPath    []string	`json:"name,omitempty"`
-	Fitness			float64 	`json:"name,omitempty"`
-	Permutation		int			`json:"name,omitempty"`
-	Population		int			`json:"name,omitempty"`
-	Selected		int			`json:"name,omitempty"`
-	NodePath		[]string	`json:"name,omitempty"`
+	SolutionPath []string `json:"name,omitempty"`
+	Fitness      float64  `json:"name,omitempty"`
+	Permutation  int      `json:"name,omitempty"`
+	Population   int      `json:"name,omitempty"`
+	Selected     int      `json:"name,omitempty"`
+	NodePath     []string `json:"name,omitempty"`
 }
-
 
 type Individual struct {
 	path    []string
@@ -77,13 +78,13 @@ func (g *Graph) runGeneticAlgorithm(population Population, stopCriterion int, co
 	nCrossOver := int((coRatio / 100) * float64(nPopulation))
 	nMutations := int((mutationRatio / 100) * float64(nPopulation))
 
-	population.makeTournament(nPopulation)
-
 	// Generate fitness of all individuals
 	for key, ind := range population.individuals {
 		g.calculateFitness(&ind)
 		population.individuals[key].fitness = ind.fitness
 	}
+
+	population.eletist(nPopulation)
 
 	// population.makeTournament(nPopulation)
 	if stopCriterion == 0 {
@@ -169,6 +170,14 @@ func (g *Graph) calculateFitness(i *Individual) {
 	i.fitness = distance
 }
 
+func (p *Population) eletist(nPopulation int) {
+	slice.Sort(p.individuals[:], func(i, j int) bool {
+		return p.individuals[i].fitness < p.individuals[j].fitness
+	})
+
+	p.individuals = p.individuals[:nPopulation]
+}
+
 func (p *Population) makeTournament(nPopulation int) {
 	k := 0.75
 	newIndividuals := make([]Individual, 0)
@@ -209,17 +218,17 @@ func (g *Graph) generatePopulation(p *Population, nodeList []string, nPopulation
 		g.calculateFitness(&individual)
 		permutation = append(permutation, individual)
 	})
-	p.individuals = permutation
 
-
-
-	fmt.Println("Quantidade de permutacoes geradas ", len(p.individuals))
+	fmt.Println("Quantidade de permutacoes geradas ", len(permutation))
 	g.frontend.genetic.Permutation = len(p.individuals)
 
 	fmt.Println("Escolhendo", nPopulation, " delas...")
 	g.frontend.genetic.Selected = nPopulation
 
-	p.makeTournament(nPopulation)
+	for i := 0; i < nPopulation; i++ {
+		index := rand.Intn(len(permutation))
+		p.individuals = append(p.individuals, permutation[index])
+	}
 
 	fmt.Println("População inicial gerada! Com o tamanho: ", len(p.individuals))
 	g.frontend.genetic.Population = len(p.individuals)
