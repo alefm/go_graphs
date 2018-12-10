@@ -28,7 +28,7 @@ func GetGraph(w http.ResponseWriter, r *http.Request) {
 
 func (g *Graph) GraphvizPNG(filename string) {
 	g.WriteToFile(filename + ".dot")
-	cmd := exec.Command("neato", "-n", "-Tpng", filename+".dot", "-o", "./static/"+ filename +".png")
+	cmd := exec.Command("neato", "-n", "-Tpng", filename+".dot", "-o", "./static/"+filename+".png")
 	cmd.Run()
 }
 
@@ -229,8 +229,8 @@ func (graph *Graph) GeneticIndex(w http.ResponseWriter, r *http.Request) {
 func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
 
 	node_begin := r.FormValue("node_begin")
-	population, err := strconv.ParseInt(r.FormValue("population"), 5, 32)
-	stop, err := strconv.ParseInt(r.FormValue("stop"), 5, 32)
+	population, err := strconv.Atoi(r.FormValue("population"))
+	stop, err := strconv.Atoi(r.FormValue("stop"))
 	crossover, err := strconv.ParseFloat(r.FormValue("crossover"), 64)
 	mutation, err := strconv.ParseFloat(r.FormValue("mutation"), 64)
 
@@ -253,7 +253,7 @@ func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
 	}
 	for idx, _ := range solution_path {
 
-		if idx + 1 > len(solution_path)-1 {
+		if idx+1 > len(solution_path)-1 {
 			node_one := graph.GetNode(solution_path[idx])
 			node_two := graph.GetNode(solution_path[0])
 			edge = Edge{node_one.Name + node_two.Name, *node_one, *node_two, 0, ""}
@@ -265,7 +265,7 @@ func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
 			tsp_graph.AddEdge(edge)
 		}
 	}
-	
+
 	tsp_graph.GraphvizPNG("genetic")
 
 	http.Redirect(w, r, "/graph/genetic", http.StatusSeeOther)
@@ -275,7 +275,7 @@ func main() {
 	var graph = NewGraph()
 
 	graph.testTrabalhoM3()
-	graph.geneticAlgorithm("E", 10, 60, 1, 100)
+	graph.geneticAlgorithm("H", 10, 60, 1, 100)
 	/*node0 := Node{"0", "", Point{4.10, 8.94}}
 	node1 := Node{"1", "", Point{9.50, 2.31}}
 	node2 := Node{"2", "", Point{6.07, 4.86}}
