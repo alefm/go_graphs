@@ -26,9 +26,9 @@ func GetGraph(w http.ResponseWriter, r *http.Request) {
 	rnd.HTML(w, http.StatusOK, "home", nil)
 }
 
-func (g *Graph) GraphvizPNG() {
-	g.WriteToFile("output.dot")
-	cmd := exec.Command("neato", "-n", "-Tpng", "output.dot", "-o", "./static/graph.png")
+func (g *Graph) GraphvizPNG(filename string) {
+	g.WriteToFile(filename + ".dot")
+	cmd := exec.Command("neato", "-n", "-Tpng", filename+".dot", "-o", "./static/"+ filename +".png")
 	cmd.Run()
 }
 
@@ -51,7 +51,7 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 			g.SearchTable1 = distance
 			g.SearchTable2 = previous
 			g.ColoringFromPath()
-			g.GraphvizPNG()
+			g.GraphvizPNG("graph")
 
 			// call template render, with graph argument passed.
 			rnd.HTML(w, http.StatusOK, "search", g)
@@ -84,7 +84,7 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 
 			fmt.Println("***************************************************************")
 			g.ColoringFromPath()
-			g.GraphvizPNG()
+			g.GraphvizPNG("graph")
 
 			// call template render, with graph argument passed.
 			rnd.HTML(w, http.StatusOK, "search", g)
@@ -92,7 +92,7 @@ func (g *Graph) MuxSearch(w http.ResponseWriter, r *http.Request) {
 
 			g.SearchPath, g.SearchWeight = g.aStar(first_node, end_node)
 			g.ColoringFromPath()
-			g.GraphvizPNG()
+			g.GraphvizPNG("graph")
 
 			// call template render, with graph argument passed.
 			rnd.HTML(w, http.StatusOK, "search", g)
@@ -129,7 +129,7 @@ func (graph *Graph) MuxColoring(w http.ResponseWriter, r *http.Request) {
 		graph.ClearColors()
 	}
 
-	graph.GraphvizPNG()
+	graph.GraphvizPNG("graph")
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -165,7 +165,7 @@ func (graph *Graph) CreateNode(w http.ResponseWriter, r *http.Request) {
 	tmp_node := Node{node_name, node_color, Point{node_x, node_y}}
 	graph.AddNode(tmp_node)
 
-	graph.GraphvizPNG()
+	graph.GraphvizPNG("graph")
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -213,14 +213,14 @@ func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	graph.GraphvizPNG()
+	graph.GraphvizPNG("graph")
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // Genetic Algorithm
 func (graph *Graph) GeneticIndex(w http.ResponseWriter, r *http.Request) {
-	graph.GraphvizPNG()
+	graph.GraphvizPNG("graph")
 
 	//rnd.HTML(w, http.StatusOK, "genetic", graph )
 	rnd.HTML(w, http.StatusOK, "genetic", graph.frontend.genetic)
@@ -242,10 +242,32 @@ func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
 
 	graph.SearchPath = solution_path
 
-	graph.ClearColors()
-	graph.Coloring()
+	graph.GraphvizPNG("graph")
 
-	graph.GraphvizPNG()
+	var tsp_graph = NewGraph()
+
+	var edge Edge
+	for _, letter := range solution_path {
+		node := graph.GetNode(letter)
+		tsp_graph.AddNode(*node)
+	}
+	for idx, _ := range solution_path {
+
+		if idx + 1 > len(solution_path)-1 {
+			node_one := graph.GetNode(solution_path[idx])
+			node_two := graph.GetNode(solution_path[0])
+			edge = Edge{node_one.Name + node_two.Name, *node_one, *node_two, 0, ""}
+			tsp_graph.AddEdge(edge)
+		} else {
+			node_one := graph.GetNode(solution_path[idx])
+			node_two := graph.GetNode(solution_path[idx+1])
+			edge = Edge{node_one.Name + node_two.Name, *node_one, *node_two, 0, ""}
+			tsp_graph.AddEdge(edge)
+		}
+	}
+	
+	tsp_graph.GraphvizPNG("genetic")
+
 	http.Redirect(w, r, "/graph/genetic", http.StatusSeeOther)
 }
 
@@ -303,7 +325,7 @@ func main() {
 		}
 	}*/
 
-	graph.GraphvizPNG()
+	graph.GraphvizPNG("graph")
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", GetGraph)
