@@ -1,0 +1,112 @@
+{{ define "genetic" }}
+
+<!DOCTYPE html>
+<html lang="pt_BR">
+  {{ template "header" }}
+
+  <body>
+    <style type="text/css">.error {color: red;}</style>
+
+    {{ template "navbar" }}
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 col-md-8 col-xl-8">
+          <h1>Grafo</h1>
+          <img class="img-fluid" src="/graph.png" alt="Imagem png do grafo gerado pelo go_graph">
+          <p>Grafo gerado a partir do go_graph.</p>
+        </div>
+
+        <div class="col-sm-12 col-md-4 col-xl-4">
+          <form action="/graph/genetic" method="POST">
+            <div class="form-row">
+              <p>Novo Experimento</p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                  <input type="text" name="node_begin" class="form-control form-control-sm" placeholder="Nó Inicial">
+                </div>
+              </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input type="text" name="population" class="form-control form-control-sm" placeholder="População">
+              </div>
+              <div class="form-group col-md-6">
+                <input type="text" name="stop" class="form-control form-control-sm" placeholder="Critério de Parada">
+              </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                  <input type="text" name="crossover" class="form-control form-control-sm" placeholder="Tx Cruzamento">
+                </div>
+                <div class="form-group col-md-6">
+                  <input type="text" name="mutation" class="form-control form-control-sm" placeholder="Tx Mutação">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                  <button type="submit" class="btn btn-primary btn-sm">Experimentar!</button>
+              </div>
+
+          </form>
+
+          <div class="col-md-12">
+            {{ with .NodePath }}
+              <p><strong>Gerando População:</strong></p>
+              <p> {{ . }} </p>
+              <hr />
+            {{ end }}
+          </div>
+
+          <div class="col-md-12">
+            {{ with .Permutation }}
+              <p><strong>Permutação:</strong></p>
+              <p> {{ . }} </p>
+              <hr />
+            {{ end }}
+          </div>
+
+          <div class="col-md-12">
+            {{ with .Selected }}
+              <p><strong>Selecionados</strong></p>
+              <p> {{ . }} </p>
+              <hr />
+            {{ end }}
+          </div>
+
+          <div class="col-md-12">
+            {{ with .Population }}
+              <p><strong>População:</strong></p>
+              <p> {{ . }} </p>
+              <hr />
+            {{ end }}
+          </div>
+
+          <div class="col-md-12">
+            {{ with .SolutionPath }}
+              <p><strong>Melhor Caminho:</strong></p>
+              <p> {{ . }} </p>
+              <hr />
+            {{ end }}
+          </div>
+
+          <div class="col-md-12">
+            {{ with .Fitness }}
+              <p><strong>Fitness:</strong></p>
+              <p> {{ . }} </p>
+              <hr />
+            {{ end }}
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /.container -->
+
+    {{ template "footer" }}
+  </body>
+</html>
+{{ end }}

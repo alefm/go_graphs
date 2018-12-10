@@ -7,6 +7,16 @@ import (
 	"time"
 )
 
+type GeneticFrontendState struct {
+	SolutionPath    []string	`json:"name,omitempty"`
+	Fitness			float64 	`json:"name,omitempty"`
+	Permutation		int			`json:"name,omitempty"`
+	Population		int			`json:"name,omitempty"`
+	Selected		int			`json:"name,omitempty"`
+	NodePath		[]string	`json:"name,omitempty"`
+}
+
+
 type Individual struct {
 	path    []string
 	fitness float64
@@ -110,6 +120,9 @@ func (g *Graph) geneticAlgorithm(startNode string, stopCriterion int, coRatio fl
 
 	solution := g.runGeneticAlgorithm(population, stopCriterion, coRatio, mutationRatio, nPopulation)
 	fmt.Println("Solução encontrada", solution.path, "com o fitness", solution.fitness)
+	g.frontend.genetic.SolutionPath = solution.path
+	g.frontend.genetic.Fitness = solution.fitness
+
 	return solution.path, solution.fitness
 }
 
@@ -186,6 +199,7 @@ func (p *Population) makeTournament(nPopulation int) {
 
 func (g *Graph) generatePopulation(p *Population, nodeList []string, nPopulation int) {
 	fmt.Println("Gerando população atraves dos nodos: ", nodeList)
+	g.frontend.genetic.NodePath = nodeList
 
 	permutation := make([]Individual, 0)
 	Perm(nodeList, func(a []string) {
@@ -197,12 +211,18 @@ func (g *Graph) generatePopulation(p *Population, nodeList []string, nPopulation
 	})
 	p.individuals = permutation
 
+
+
 	fmt.Println("Quantidade de permutacoes geradas ", len(p.individuals))
+	g.frontend.genetic.Permutation = len(p.individuals)
+
 	fmt.Println("Escolhendo", nPopulation, " delas...")
+	g.frontend.genetic.Selected = nPopulation
 
 	p.makeTournament(nPopulation)
 
 	fmt.Println("População inicial gerada! Com o tamanho: ", len(p.individuals))
+	g.frontend.genetic.Population = len(p.individuals)
 }
 
 func unique(stringSlice []string) []string {
