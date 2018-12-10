@@ -78,18 +78,13 @@ func (g *Graph) runGeneticAlgorithm(population Population, stopCriterion int, co
 	nCrossOver := int((coRatio / 100) * float64(nPopulation))
 	nMutations := int((mutationRatio / 100) * float64(nPopulation))
 
-	// population.makeTournament(nPopulation)
-	population.eletist(nPopulation)
-
-	for key, val := range population.individuals {
-		fmt.Println("#", key, val.fitness)
-	}
-
 	// Generate fitness of all individuals
 	for key, ind := range population.individuals {
 		g.calculateFitness(&ind)
 		population.individuals[key].fitness = ind.fitness
 	}
+
+	population.eletist(nPopulation)
 
 	// population.makeTournament(nPopulation)
 	if stopCriterion == 0 {
@@ -223,7 +218,6 @@ func (g *Graph) generatePopulation(p *Population, nodeList []string, nPopulation
 		g.calculateFitness(&individual)
 		permutation = append(permutation, individual)
 	})
-	// p.individuals = permutation
 
 	fmt.Println("Quantidade de permutacoes geradas ", len(permutation))
 	g.frontend.genetic.Permutation = len(p.individuals)
@@ -234,21 +228,6 @@ func (g *Graph) generatePopulation(p *Population, nodeList []string, nPopulation
 	for i := 0; i < nPopulation; i++ {
 		index := rand.Intn(len(permutation))
 		p.individuals = append(p.individuals, permutation[index])
-	}
-
-	// for key, val := range p.individuals {
-	// 	fmt.Println(key, val.fitness)
-	// }
-
-	// p.makeTournament(nPopulation)
-	// slice.Sort(p.individuals[:], func(i, j int) bool {
-	// 	return p.individuals[i].fitness < p.individuals[j].fitness
-	// })
-
-	// p.individuals = p.individuals[:nPopulation]
-
-	for key, val := range p.individuals {
-		fmt.Println("*", key, val.fitness)
 	}
 
 	fmt.Println("População inicial gerada! Com o tamanho: ", len(p.individuals))
