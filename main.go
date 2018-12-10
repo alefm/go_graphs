@@ -218,19 +218,18 @@ func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-
 // Genetic Algorithm
 func (graph *Graph) GeneticIndex(w http.ResponseWriter, r *http.Request) {
 	graph.GraphvizPNG()
 
 	//rnd.HTML(w, http.StatusOK, "genetic", graph )
-	rnd.HTML(w, http.StatusOK, "genetic", graph.frontend.genetic )
+	rnd.HTML(w, http.StatusOK, "genetic", graph.frontend.genetic)
 }
 
 func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
 
 	node_begin := r.FormValue("node_begin")
-	population, err := strconv.ParseInt(r.FormValue("population"), 5, 32)	 
+	population, err := strconv.ParseInt(r.FormValue("population"), 5, 32)
 	stop, err := strconv.ParseInt(r.FormValue("stop"), 5, 32)
 	crossover, err := strconv.ParseFloat(r.FormValue("crossover"), 64)
 	mutation, err := strconv.ParseFloat(r.FormValue("mutation"), 64)
@@ -240,7 +239,7 @@ func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	solution_path, _ := graph.geneticAlgorithm(node_begin, int(stop), crossover, mutation, int(population))
-	
+
 	graph.SearchPath = solution_path
 
 	graph.ClearColors()
@@ -254,7 +253,7 @@ func main() {
 	var graph = NewGraph()
 
 	graph.testTrabalhoM3()
-	graph.geneticAlgorithm("E", 10, 60, 1, 100)
+	graph.geneticAlgorithm("E", 100, 60, 1, 100)
 	/*node0 := Node{"0", "", Point{4.10, 8.94}}
 	node1 := Node{"1", "", Point{9.50, 2.31}}
 	node2 := Node{"2", "", Point{6.07, 4.86}}
