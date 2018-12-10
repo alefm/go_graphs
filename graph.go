@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+type FrontendState struct {
+	genetic GeneticFrontendState
+}
+
 // Graph structure
 type Graph struct {
 
@@ -24,6 +28,8 @@ type Graph struct {
 	SearchTable2 []string
 	SearchTable3 [][]float64
 	SearchTable4 [][]string
+
+	frontend	 FrontendState
 }
 
 // NewGraph returns a new Graph.

@@ -218,6 +218,38 @@ func (graph *Graph) CreateEdge(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+
+// Genetic Algorithm
+func (graph *Graph) GeneticIndex(w http.ResponseWriter, r *http.Request) {
+	graph.GraphvizPNG()
+
+	//rnd.HTML(w, http.StatusOK, "genetic", graph )
+	rnd.HTML(w, http.StatusOK, "genetic", graph.frontend.genetic )
+}
+
+func (graph *Graph) GeneticExperiment(w http.ResponseWriter, r *http.Request) {
+
+	node_begin := r.FormValue("node_begin")
+	population, err := strconv.ParseInt(r.FormValue("population"), 5, 32)	 
+	stop, err := strconv.ParseInt(r.FormValue("stop"), 5, 32)
+	crossover, err := strconv.ParseFloat(r.FormValue("crossover"), 64)
+	mutation, err := strconv.ParseFloat(r.FormValue("mutation"), 64)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	solution_path, _ := graph.geneticAlgorithm(node_begin, int(stop), crossover, mutation, int(population))
+	
+	graph.SearchPath = solution_path
+
+	graph.ClearColors()
+	graph.Coloring()
+
+	graph.GraphvizPNG()
+	http.Redirect(w, r, "/graph/genetic", http.StatusSeeOther)
+}
+
 func main() {
 	var graph = NewGraph()
 
@@ -283,6 +315,8 @@ func main() {
 	router.HandleFunc("/graph/color/{algorithm}", graph.MuxColoring).Methods("GET")
 	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("GET")
 	router.HandleFunc("/graph/search", graph.MuxSearch).Methods("POST")
+	router.HandleFunc("/graph/genetic", graph.GeneticIndex).Methods("GET")
+	router.HandleFunc("/graph/genetic", graph.GeneticExperiment).Methods("POST")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	http.ListenAndServe(":8000", router)
